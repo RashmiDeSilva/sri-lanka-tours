@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tour Guide Tours | Sri Lanka Tours</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f0f8ff; }
+        .ocean-bg { background: linear-gradient(135deg, #f0f9ff 0%, #e8f4fd 50%, #f0f9ff 100%); min-height: 100vh; }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col ocean-bg">
+
+    <!-- Shared Top Navbar Fragment -->
+    <header th:replace="~{fragments/header :: header('tour-plans')}"></header>
+
+    <!-- Top Banner -->
+    <div class="relative w-full bg-[#f0f8ff] pt-12 pb-8 border-b border-blue-100">
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div class="flex items-center gap-2 text-sm font-semibold text-slate-500 mb-4">
+                <a th:href="@{|/home/tourguide/${guide.id}|}" class="hover:text-blue-600 transition-colors">Dashboard</a>
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                <span class="text-blue-600">Detailed Tour Plans</span>
+            </div>
+
+            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+                <div>
+                    <div class="inline-flex items-center gap-2 rounded-full bg-blue-100 px-4 py-2 text-xs font-black uppercase tracking-[0.28em] text-blue-700 mb-4">
+                        <i data-lucide="map" class="w-4 h-4"></i>
+                        Tour Assignments
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-2">Detailed Tour Plans</h1>
+                    <p class="text-slate-600 font-medium max-w-2xl">Review trip details, check passenger breakdowns, and see the latest tourist notes or cancellation updates before you respond.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Detailed List Area -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <main class="flex-1 p-8 max-w-7xl mx-auto w-full space-y-8">
+            <div th:if="${success}" class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 shadow-sm">
+                <span th:text="${success}">Action completed successfully.</span>
+            </div>
+
+            <!-- Tours Lists -->
+            <section th:if="${tourPlans != null and !#lists.isEmpty(tourPlans)}" class="space-y-6">
+                <article th:each="plan : ${tourPlans}" th:with="planDays=${plan.startDate != null and plan.endDate != null ? T(java.time.temporal.ChronoUnit).DAYS.between(plan.startDate, plan.endDate) + 1 : 1}" class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-7">
+                    <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                        <div>
+                            <div class="flex items-center gap-2 text-xs font-black uppercase tracking-[0.28em] text-slate-400 mb-3">
+                                <span>Plan</span>
+                                <span th:text="${'#' + plan.id}">#1</span>
+                            </div>
+                            <h2 class="text-2xl font-black text-slate-900 mb-2" th:text="${plan.startDate != null ? plan.tourist.name + ' - Custom Tour Plan' : plan.tourist.name + ' - Guide Booking'}">Custom Tour Plan</h2>
+                            <p class="text-sm text-slate-500 font-medium" th:text="${plan.startDate != null and plan.endDate != null ? #temporals.format(plan.startDate, 'dd MMM yyyy') + ' - ' + #temporals.format(plan.endDate, 'dd MMM yyyy') : 'Dates to be finalized'}">12 Jun 2026 - 18 Jun 2026</p>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span th:if="${plan.startDate != null}" class="inline-flex items-center gap-2 rounded-full bg-blue-50 text-blue-700 px-3 py-1.5 text-xs font-black uppercase tracking-wider">
+                                <i data-lucide="calendar-days" class="w-3.5 h-3.5"></i>
+                                <span th:text="${planDays}">5</span> Days
+                            </span>
+                            <span th:if="${plan.startDate == null}" class="inline-flex items-center gap-2 rounded-full bg-amber-50 text-amber-700 px-3 py-1.5 text-xs font-black uppercase tracking-wider">
+                                <i data-lucide="calendar-off" class="w-3.5 h-3.5"></i>
+                                Flexible Dates
+                            </span>
+                            <span class="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-black uppercase tracking-wider"
+                                  th:classappend="${plan.status.name() == 'ACCEPTED' ? 'bg-emerald-100 text-emerald-800' : (plan.status.name() == 'REJECTED' || plan.status.name() == 'CANCELLED' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800')}"
+                                  th:text="${plan.status.name() == 'CANCELLED' ? 'CANCELLED BY TOURIST' : plan.status}">PENDING_QUOTATION</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-6">
+                        <!-- Column 1: Selected Destinations -->
+                        <div class="rounded-2xl border border-cyan-200 bg-cyan-50 p-5 shadow-sm">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-sm font-black uppercase tracking-[0.25em] text-cyan-700">Selected Destinations</h3>
+                                <span class="text-xs font-bold text-cyan-700/80" th:text="${plan.destinations != null ? #lists.size(plan.destinations) + ' places' : '0 places'}">0 places</span>
+                            </div>
+                            <div th:if="${plan.destinations != null and !#lists.isEmpty(plan.destinations)}" class="flex flex-wrap gap-2">
+                                <span th:each="dest : ${plan.destinations}" th:text="${dest.name}" class="inline-flex items-center rounded-full bg-white/90 border border-cyan-200 px-3 py-1.5 text-sm font-bold text-cyan-900 shadow-sm"></span>
+                            </div>
+                            <p th:if="${plan.destinations == null or #lists.isEmpty(plan.destinations)}" class="text-sm text-cyan-900/70 leading-relaxed">Direct Guide booking request. Destinations will be discussed with guide.</p>
+                        </div>
+
+                        <!-- Column 2: Travel Members -->
+                        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
+                            <div class="mb-4 flex items-center justify-between">
+                                <h3 class="text-sm font-black uppercase tracking-[0.25em] text-emerald-700">Travel Members</h3>
+                                <span class="text-xs font-bold text-emerald-700/80" th:text="${plan.totalMembers + ' total'}">0 total</span>
+                            </div>
+                            <div class="space-y-2 text-sm font-semibold text-emerald-950">
+                                <div class="flex items-center justify-between rounded-xl bg-white/90 px-3 py-2 border border-emerald-100">
+                                    <span>Adults</span>
+                                    <span th:text="${plan.adultMembers}">0</span>
+                                </div>
+                                <div class="flex items-center justify-between rounded-xl bg-white/90 px-3 py-2 border border-emerald-100">
+                                    <span>Children</span>
+                                    <span th:text="${plan.childMembers}">0</span>
+                                </div>
+                                <div class="flex items-center justify-between rounded-xl bg-white/90 px-3 py-2 border border-emerald-100">
+                                    <span>Optional</span>
+                                    <span th:text="${plan.optionalMembers}">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Column 3: Tourist Contact Info -->
+                        <div class="rounded-2xl border border-violet-200 bg-violet-50 p-5 shadow-sm">
+                            <div class="mb-4 flex items-center justify-between">
+                                <h3 class="text-sm font-black uppercase tracking-[0.25em] text-violet-700">Tourist Contact</h3>
+                                <span class="text-xs font-bold text-violet-700/80" th:text="${plan.tourist.country != null ? plan.tourist.country : 'International'}">Country</span>
+                            </div>
+                            <div class="space-y-2 text-sm font-semibold text-violet-950">
+                                <div class="flex items-center justify-between rounded-xl bg-white/90 px-3 py-2 border border-violet-100">
+                                    <span>Name</span>
+                                    <span th:text="${plan.tourist.name}">John Doe</span>
+                                </div>
+                                <div class="flex items-center justify-between rounded-xl bg-white/90 px-3 py-2 border border-violet-100">
+                                    <span>Email</span>
+                                    <span class="truncate max-w-[120px]" th:text="${plan.tourist.email}" th:title="${plan.tourist.email}">tourist@email.com</span>
+                                </div>
+                                <div class="flex items-center justify-between rounded-xl bg-white/90 px-3 py-2 border border-violet-100">
+                                    <span>Phone</span>
+                                    <span th:text="${plan.tourist.phone != null and !plan.tourist.phone.isEmpty() ? plan.tourist.phone : 'Not provided'}">+94 77 123 4567</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cost / Quotation Panel -->
+                    <div class="rounded-2xl border border-blue-200 bg-blue-50 p-5 mt-4 shadow-sm">
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+                            <div>
+                                <h3 class="text-sm font-black uppercase tracking-[0.25em] text-blue-500 mb-1">Estimated Cost</h3>
+                                <p class="text-xs text-blue-700 font-semibold">Calculated based on guide hourly rate and days</p>
+                            </div>
+                            <div class="text-right">
+                                <span th:if="${plan.totalEstimatedCost != null and plan.totalEstimatedCost > 0}" class="text-2xl font-black text-blue-900" th:text="${'Rs. ' + #numbers.formatDecimal(plan.totalEstimatedCost, 1, 'DEFAULT', 2, 'DEFAULT')}">Rs. 0.00</span>
+                                <span th:if="${plan.totalEstimatedCost == null or plan.totalEstimatedCost <= 0}" class="text-base font-bold text-blue-900 italic">Quotable/Contact request</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${(plan.touristNote != null and !#strings.isEmpty(plan.touristNote)) or (plan.guideNotification != null and !#strings.isEmpty(plan.guideNotification))}" class="rounded-2xl border border-fuchsia-200 bg-fuchsia-50 p-5 mt-4 shadow-sm">
+                        <div class="flex items-center justify-between gap-4 mb-3">
+                            <div>
+                                <h3 class="text-sm font-black uppercase tracking-[0.25em] text-fuchsia-700">Tourist Update</h3>
+                                <p class="text-xs text-fuchsia-700 font-semibold">Latest note or update shared with the guide.</p>
+                            </div>
+                            <span class="text-xs font-bold text-fuchsia-700/80" th:text="${plan.updatedAt != null ? #temporals.format(plan.updatedAt, 'dd MMM yyyy, hh:mm a') : 'Recently updated'}">Recently updated</span>
+                        </div>
+                        <p th:if="${plan.touristNote != null and !#strings.isEmpty(plan.touristNote)}" class="text-sm font-semibold text-fuchsia-950 leading-relaxed" th:text="${plan.touristNote}">Booked guide note.</p>
+                        <div th:if="${plan.guideNotification != null and !#strings.isEmpty(plan.guideNotification)}" class="mt-3 rounded-xl border border-fuchsia-100 bg-white/85 px-3 py-2 text-xs font-semibold text-fuchsia-900 leading-relaxed" th:text="${plan.guideNotification}">Tour plan updated by tourist.</div>
+                    </div>
+
+                    <!-- Actions Footer (Accept/Decline buttons) -->
+                    <div th:if="${plan.status.name() == 'PENDING_QUOTATION'}" class="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3 border-t border-slate-100 pt-5">
+                        <form th:action="@{|/home/tourguide/${guide.id}/quotation|}" method="post" class="flex gap-3 w-full sm:w-auto">
+                            <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                            <input type="hidden" name="planId" th:value="${plan.id}" />
+                            <button type="submit" name="action" value="reject" class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 text-slate-600 bg-white px-6 py-2.5 text-sm font-bold hover:bg-slate-50 transition-colors w-full sm:w-auto">
+                                <i data-lucide="x" class="w-4 h-4"></i>
+                                Decline
+                            </button>
+                            <button type="submit" name="action" value="accept" class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 text-white px-6 py-2.5 text-sm font-bold hover:bg-emerald-700 transition-colors shadow-md shadow-emerald-500/10 w-full sm:w-auto">
+                                <i data-lucide="check" class="w-4 h-4"></i>
+                                Accept Tour Booking
+                            </button>
+                        </form>
+                    </div>
+                </article>
+            </section>
+
+            <!-- Empty State -->
+            <div th:if="${tourPlans == null or #lists.isEmpty(tourPlans)}" class="bg-white rounded-[2rem] border border-slate-200 p-8 text-center max-w-3xl mx-auto shadow-sm">
+                <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="inbox" class="w-8 h-8 text-blue-400"></i>
+                </div>
+                <h4 class="text-lg font-bold text-slate-800 mb-2">No Assigned Tours Yet</h4>
+                <p class="text-sm text-slate-500">Tours and custom guide bookings will appear here once tourists select you as their guide.</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Shared Footer Fragment -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

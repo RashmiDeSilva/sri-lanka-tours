@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Sri Lanka Tours</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandBlue: '#0056b3',
+                        sidebarBg: '#112240',
+                        lightBg: '#f8fafc',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .sidebar-item {
+            display: flex; align-items: center; gap: 12px; padding: 10px 16px; margin: 4px 12px;
+            border-radius: 8px; color: #94a3b8; font-size: 0.875rem; font-weight: 500; transition: all 0.2s;
+        }
+        .sidebar-item:hover { color: white; background: rgba(255, 255, 255, 0.05); }
+        .sidebar-item.active { color: white; background: #0056b3; }
+        
+        .sidebar-section {
+            font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase;
+            letter-spacing: 0.05em; margin: 20px 16px 8px 16px;
+        }
+
+        .stat-card {
+            background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;
+            display: flex; align-items: flex-start; gap: 16px; transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body class="flex h-screen bg-lightBg overflow-hidden text-slate-800">
+
+    <!-- Left Sidebar from Fragment -->
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('dashboard')}"></aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col min-w-0 bg-lightBg z-10">
+        
+        <!-- Top Header Navigation -->
+        <header class="h-[72px] bg-white border-b border-slate-200 flex items-center justify-end px-8 shrink-0">
+            <div class="flex items-center gap-6">
+                <div class="relative hidden md:block">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                    <input type="text" placeholder="Search..." class="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm w-64 focus:outline-none focus:border-brandBlue">
+                </div>
+                
+                <div class="relative cursor-pointer">
+                    <i data-lucide="bell" class="w-5 h-5 text-slate-600"></i>
+                    <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 rounded-full text-[8px] font-bold text-white flex items-center justify-center border border-white">2</span>
+                </div>
+                
+                <div class="h-6 w-px bg-slate-200"></div>
+                
+                <div class="flex items-center gap-3 cursor-pointer">
+                    <div class="w-8 h-8 rounded-full bg-brandBlue text-white flex items-center justify-center font-bold text-sm">
+                        A
+                    </div>
+                    <div class="hidden sm:block">
+                        <div class="text-sm font-bold text-slate-800 leading-none">Admin User</div>
+                        <div class="text-[10px] text-slate-500 font-medium mt-0.5">Super Admin</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="flex-1 overflow-y-auto p-6 lg:p-8">
+            
+            <div class="mb-8">
+                <h2 class="text-2xl font-black text-slate-900 tracking-tight">Admin Dashboard</h2>
+                <p class="text-sm text-slate-500 mt-1">Welcome back. Here is the system overview.</p>
+            </div>
+
+            <!-- Dashboard Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
+                <div class="stat-card">
+                    <div class="w-12 h-12 rounded-xl bg-blue-100 text-brandBlue flex items-center justify-center shrink-0">
+                        <i data-lucide="users" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm font-bold text-slate-500 mb-1">Total Users</div>
+                        <div class="text-2xl font-black text-slate-900 leading-none">1,250</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                        <i data-lucide="map-pin" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm font-bold text-slate-500 mb-1">Destinations</div>
+                        <div class="text-2xl font-black text-slate-900 leading-none">48</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="w-12 h-12 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">
+                        <i data-lucide="contact" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm font-bold text-slate-500 mb-1">Tour Guides</div>
+                        <div class="text-2xl font-black text-slate-900 leading-none">85</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center shrink-0">
+                        <i data-lucide="calendar-check" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm font-bold text-slate-500 mb-1">Total Bookings</div>
+                        <div class="text-2xl font-black text-slate-900 leading-none">342</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="w-12 h-12 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center shrink-0">
+                        <i data-lucide="star" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm font-bold text-slate-500 mb-1">Total Reviews</div>
+                        <div class="text-2xl font-black text-slate-900 leading-none">890</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Recent Activities -->
+                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 mb-6 flex items-center justify-between">
+                        Recent Activities
+                        <button class="text-xs text-brandBlue hover:underline">View All</button>
+                    </h3>
+                    
+                    <div class="space-y-6">
+                        <div class="flex gap-4">
+                            <div class="w-8 h-8 rounded-full bg-blue-100 text-brandBlue flex items-center justify-center shrink-0">
+                                <i data-lucide="user-plus" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-slate-700 font-medium"><span class="font-bold text-slate-900">John Doe</span> registered as a new Tourist.</p>
+                                <p class="text-xs text-slate-400 mt-1">10 minutes ago</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-4">
+                            <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center shrink-0">
+                                <i data-lucide="calendar" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-slate-700 font-medium"><span class="font-bold text-slate-900">Sarah Smith</span> booked a tour with Guide <span class="font-bold">Nimal</span>.</p>
+                                <p class="text-xs text-slate-400 mt-1">2 hours ago</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4">
+                            <div class="w-8 h-8 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center shrink-0">
+                                <i data-lucide="star" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-slate-700 font-medium"><span class="font-bold text-slate-900">Kamal Perera</span> left a 5-star review for Sigiriya.</p>
+                                <p class="text-xs text-slate-400 mt-1">4 hours ago</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics & Reports -->
+                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 mb-6 flex items-center justify-between">
+                        Analytics Overview
+                        <button class="text-xs text-brandBlue hover:underline">Download Report</button>
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1.5">
+                                <span class="font-bold text-slate-700">Tourist Growth</span>
+                                <span class="text-emerald-600 font-bold">+15%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2">
+                                <div class="bg-brandBlue h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-1.5 mt-4">
+                                <span class="font-bold text-slate-700">Guide Registrations</span>
+                                <span class="text-emerald-600 font-bold">+5%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2">
+                                <div class="bg-orange-500 h-2 rounded-full" style="width: 45%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-sm mb-1.5 mt-4">
+                                <span class="font-bold text-slate-700">Booking Completion Rate</span>
+                                <span class="text-slate-500 font-bold">92%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2">
+                                <div class="bg-emerald-500 h-2 rounded-full" style="width: 92%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <footer th:replace="~{fragments/admin-footer :: footer}"></footer>
+    </main>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

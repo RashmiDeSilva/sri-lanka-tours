@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tour Plan Details | Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { brandBlue: '#0056b3', lightBg: '#f8fafc' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .info-label { font-size: 0.72rem; font-weight: 900; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+        .info-value { font-size: 0.95rem; font-weight: 700; color: #0f172a; }
+        .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; }
+        .badge-active { background: #dcfce7; color: #166534; }
+        .badge-pending { background: #fef3c7; color: #92400e; }
+        .badge-rejected { background: #fee2e2; color: #991b1b; }
+        .badge-completed { background: #e0f2fe; color: #0369a1; }
+        .badge-cancelled { background: #f1f5f9; color: #475569; }
+    </style>
+</head>
+<body class="flex h-screen bg-lightBg overflow-hidden text-slate-800">
+
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('plans')}"></aside>
+
+    <main class="flex-1 flex flex-col min-w-0 bg-lightBg z-10">
+        <header th:replace="~{fragments/admin-header :: header('Tour Plan Details', 'Full details of a custom tourist itinerary')}"></header>
+
+        <div class="flex-1 overflow-y-auto p-6 lg:p-8">
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 text-sm text-slate-500 font-semibold mb-6">
+                <a href="/admin/tour-plans" class="flex items-center gap-1.5 hover:text-brandBlue transition">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Travel Plans
+                </a>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                <span class="text-slate-800 font-black" th:text="${'Plan #' + plan.id}">Plan #1</span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Sidebar Info -->
+                <div class="lg:col-span-1 space-y-4">
+                    <!-- Status Card -->
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-5">
+                        <div class="info-label">Status</div>
+                        <div class="mt-2">
+                            <span th:if="${plan.status.name() == 'PENDING_QUOTATION'}" class="badge badge-pending"><i data-lucide="clock" class="w-3.5 h-3.5"></i> Pending Quotation</span>
+                            <span th:if="${plan.status.name() == 'ACCEPTED'}" class="badge badge-active"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Accepted</span>
+                            <span th:if="${plan.status.name() == 'REJECTED'}" class="badge badge-rejected"><i data-lucide="x-circle" class="w-3.5 h-3.5"></i> Rejected</span>
+                            <span th:if="${plan.status.name() == 'COMPLETED'}" class="badge badge-completed"><i data-lucide="flag" class="w-3.5 h-3.5"></i> Completed</span>
+                            <span th:if="${plan.status.name() == 'CANCELLED'}" class="badge badge-cancelled"><i data-lucide="ban" class="w-3.5 h-3.5"></i> Cancelled</span>
+                        </div>
+                    </div>
+
+                    <!-- Tourist Info -->
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-5">
+                        <div class="info-label mb-3">Tourist</div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center shrink-0">
+                                <i data-lucide="user" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="font-black text-slate-900" th:text="${plan.tourist.name}">Tourist Name</p>
+                                <p class="text-xs text-slate-500 font-medium" th:text="${plan.tourist.email}">email@example.com</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Guide Info -->
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-5">
+                        <div class="info-label mb-3">Assigned Guide</div>
+                        <div th:if="${plan.guide != null}" class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+                                <i data-lucide="contact" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="font-black text-slate-900" th:text="${plan.guide.name}">Guide Name</p>
+                                <p class="text-xs text-slate-500 font-medium" th:text="${plan.guide.email}">guide@email.com</p>
+                            </div>
+                        </div>
+                        <p th:if="${plan.guide == null}" class="text-slate-400 font-semibold italic text-sm">No guide assigned</p>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-5 space-y-2">
+                        <h3 class="text-xs font-black text-slate-700 uppercase tracking-wider mb-3">Actions</h3>
+                        <a th:href="@{/admin/tour-plans/{id}/edit(id=${plan.id})}" class="flex items-center gap-2 text-sm font-bold text-brandBlue hover:bg-blue-50 px-3 py-2 rounded-lg transition">
+                            <i data-lucide="edit" class="w-4 h-4"></i> Edit Tour Plan
+                        </a>
+                        <a th:href="@{/admin/tour-plans/{id}/delete(id=${plan.id})}"
+                           onclick="return confirm('Are you sure you want to delete this tour plan?')"
+                           class="flex items-center gap-2 text-sm font-bold text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg transition">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i> Delete Tour Plan
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Main Details -->
+                <div class="lg:col-span-2 space-y-4">
+                    <!-- Overview -->
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-6">
+                        <h2 class="text-base font-black text-slate-900 mb-5">Plan Overview</h2>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-5">
+                            <div>
+                                <div class="info-label">Plan ID</div>
+                                <div class="info-value" th:text="${'#' + plan.id}">#1</div>
+                            </div>
+                            <div>
+                                <div class="info-label">Start Date</div>
+                                <div class="info-value" th:text="${plan.startDate != null ? #temporals.format(plan.startDate, 'dd MMM yyyy') : 'TBD'}">TBD</div>
+                            </div>
+                            <div>
+                                <div class="info-label">End Date</div>
+                                <div class="info-value" th:text="${plan.endDate != null ? #temporals.format(plan.endDate, 'dd MMM yyyy') : 'TBD'}">TBD</div>
+                            </div>
+                            <div>
+                                <div class="info-label">Total Cost</div>
+                                <div class="info-value text-emerald-700" th:text="${plan.totalEstimatedCost != null ? 'Rs. ' + #numbers.formatDecimal(plan.totalEstimatedCost, 1, 'DEFAULT', 2, 'DEFAULT') : 'N/A'}">N/A</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Destinations -->
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-6">
+                        <h2 class="text-base font-black text-slate-900 mb-4">Selected Destinations</h2>
+                        <div th:if="${!#lists.isEmpty(plan.destinations)}" class="flex flex-wrap gap-2">
+                            <span th:each="dest : ${plan.destinations}"
+                                  th:text="${dest.name}"
+                                  class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 border border-blue-100 text-blue-800 rounded-lg text-sm font-bold">
+                                Destination
+                            </span>
+                        </div>
+                        <p th:if="${#lists.isEmpty(plan.destinations)}" class="text-slate-400 italic text-sm font-semibold">No destinations selected (guide booking).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer th:replace="~{fragments/admin-footer :: footer}"></footer>
+    </main>
+
+    <script>lucide.createIcons();</script>
+</body>
+</html>

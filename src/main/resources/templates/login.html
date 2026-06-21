@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Tour Guide System</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primaryBlue: '#0077B6',
+                        oceanBlue: '#0096C7',
+                        lightBlue: '#CAF0F8',
+                        darkBlue: '#023E8A'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .ocean-bg { 
+            background-image: linear-gradient(rgba(2, 62, 138, 0.65), rgba(0, 150, 199, 0.45)), url('/images/sri_lanka_collage.png');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh; 
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .input-field {
+            width: 100%;
+            padding: 12px 16px 12px 40px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        .input-field:focus {
+            border-color: #0077B6;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(0, 119, 182, 0.1);
+        }
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            transition: color 0.3s ease;
+        }
+        .input-group:focus-within .input-icon {
+            color: #0077B6;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen ocean-bg text-slate-800">
+
+    <div class="flex-1 flex items-center justify-center p-6">
+        <div class="glass-card w-full max-w-md p-8 md:p-10 relative overflow-hidden">
+        <!-- Decorative blob -->
+        <div class="absolute -top-16 -right-16 w-32 h-32 bg-lightBlue rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
+        <div class="absolute -bottom-16 -left-16 w-32 h-32 bg-primaryBlue rounded-full mix-blend-multiply filter blur-xl opacity-20"></div>
+
+        <div class="relative z-10">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-br from-primaryBlue to-oceanBlue rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-lg shadow-primaryBlue/30 transform rotate-3">
+                    <i data-lucide="map-pin" class="w-8 h-8 text-white -rotate-3"></i>
+                </div>
+                <h1 class="text-3xl font-black text-slate-900 tracking-tight">Welcome Back</h1>
+                <p class="text-sm text-slate-500 font-medium mt-2">Sign in to your Tour Guide account</p>
+            </div>
+
+            <div th:if="${param.error}" class="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
+                Invalid login details or your tour guide account is waiting for admin approval.
+            </div>
+
+            <form th:action="@{/login}" method="post" class="space-y-5">
+                <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">Email Address</label>
+                    <div class="relative input-group">
+                        <i data-lucide="mail" class="w-5 h-5 input-icon"></i>
+                        <input type="email" name="username" placeholder="john@example.com" required class="input-field text-sm font-medium text-slate-900">
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide">Password</label>
+                        <a href="#" class="text-xs font-bold text-primaryBlue hover:text-darkBlue transition-colors">Forgot Password?</a>
+                    </div>
+                    <div class="relative input-group">
+                        <i data-lucide="lock" class="w-5 h-5 input-icon"></i>
+                        <input type="password" name="password" placeholder="••••••••" required class="input-field text-sm font-medium text-slate-900">
+                    </div>
+                </div>
+
+
+                <div class="flex items-center gap-2 mt-2">
+                    <input type="checkbox" id="remember" class="w-4 h-4 rounded border-slate-300 text-primaryBlue focus:ring-primaryBlue">
+                    <label for="remember" class="text-sm font-medium text-slate-600">Remember me for 30 days</label>
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-primaryBlue to-oceanBlue hover:from-darkBlue hover:to-primaryBlue text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-primaryBlue/30 hover:shadow-xl hover:-translate-y-0.5 mt-6">
+                    Sign In to Account
+                </button>
+            </form>
+
+            <div class="mt-8 text-center">
+                <p class="text-sm font-medium text-slate-600">
+                    Don't have an account yet? 
+                    <a th:href="@{/register}" class="font-bold text-primaryBlue hover:text-darkBlue transition-colors ml-1">Create Account</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Shared Footer -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

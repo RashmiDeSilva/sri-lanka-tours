@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tour Guides | Sri Lanka Tours</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .ocean-bg { background: linear-gradient(135deg, #f0f9ff 0%, #e8f4fd 50%, #f0f9ff 100%); min-height: 100vh; }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col ocean-bg">
+
+    <!-- Header -->
+    <header th:replace="~{fragments/header :: header('guides')}"></header>
+
+    <!-- Page Header -->
+    <div class="relative w-full bg-[#f0f8ff] pt-12 pb-8 border-b border-blue-100">
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div class="flex items-center gap-2 text-sm font-semibold text-slate-500 mb-4">
+                <a href="/" class="hover:text-blue-600 transition-colors">Home</a>
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                <span class="text-blue-600">Tour Guides</span>
+            </div>
+
+            <div class="inline-flex items-center gap-2 rounded-full bg-blue-50 border border-blue-100 px-4 py-1.5 text-xs font-black uppercase tracking-[0.25em] text-blue-700 mb-3">
+                <i data-lucide="users" class="w-3.5 h-3.5"></i>
+                Expert Guides
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-2">Tour Guides</h1>
+            <p class="text-slate-600 font-medium max-w-2xl text-sm md:text-base leading-relaxed">
+                Connect with verified local experts. Filter by language, rate, or experience, and select the ideal guide to customize your itinerary.
+            </p>
+        </div>
+    </div>
+
+    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <main class="flex-1 p-6 md:p-8 max-w-7xl mx-auto w-full space-y-8">
+
+            <!-- Search & Filters -->
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-5 md:p-6">
+                <form action="/tourist/guides" method="GET" class="flex flex-col lg:flex-row gap-4 items-center justify-between">
+                    
+                    <!-- Search Input -->
+                    <div class="relative w-full lg:flex-1">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                        <input type="text" name="search" th:value="${search}" placeholder="Search guides by name..." 
+                               class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-semibold">
+                    </div>
+
+                    <!-- Language Select -->
+                    <div class="relative w-full lg:w-64">
+                        <i data-lucide="languages" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                        <select name="language" 
+                                class="w-full pl-11 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-semibold appearance-none">
+                            <option value="">All Languages</option>
+                            <option th:each="lang : ${activeLanguages}" 
+                                    th:value="${lang}" 
+                                    th:text="${lang}"
+                                    th:selected="${selectedLanguage == lang}"></option>
+                        </select>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                    </div>
+
+                    <!-- Sort Select -->
+                    <div class="relative w-full lg:w-64">
+                        <i data-lucide="sliders-horizontal" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                        <select name="sort" 
+                                class="w-full pl-11 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-semibold appearance-none">
+                            <option value="name" th:selected="${selectedSort == null or selectedSort == '' or selectedSort == 'name'}">Name</option>
+                            <option value="rate_low_high" th:selected="${selectedSort == 'rate_low_high'}">Price: Low to High</option>
+                            <option value="rate_high_low" th:selected="${selectedSort == 'rate_high_low'}">Price: High to Low</option>
+                        </select>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                    </div>
+
+                    <!-- Form Buttons -->
+                    <div class="flex gap-2 w-full lg:w-auto shrink-0">
+                        <button type="submit" class="flex-1 lg:flex-initial bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-2xl shadow-md shadow-blue-200 transition-all text-sm flex items-center justify-center gap-2">
+                            <i data-lucide="filter" class="w-4 h-4"></i> Filter
+                        </button>
+                        <a href="/tourist/guides" class="flex-1 lg:flex-initial bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 px-6 rounded-2xl transition-colors text-sm flex items-center justify-center gap-2 text-center">
+                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Clear
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════════════ -->
+            <!--  MY GUIDE BOOKINGS SECTION (Accepted + Pending)               -->
+            <!-- ═══════════════════════════════════════════════════════════════ -->
+            <div th:if="${(acceptedBookings != null and !#lists.isEmpty(acceptedBookings)) or (pendingBookings != null and !#lists.isEmpty(pendingBookings))}" class="space-y-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center shadow-sm">
+                        <i data-lucide="calendar-check" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-black text-slate-900">My Guide Bookings</h2>
+                        <p class="text-xs font-semibold text-slate-500">Your booked and pending guide requests</p>
+                    </div>
+                </div>
+
+                <!-- ───── Accepted (Booked) Guides ───── -->
+                <div th:if="${acceptedBookings != null and !#lists.isEmpty(acceptedBookings)}" class="space-y-4">
+                    <h3 class="text-xs font-black uppercase tracking-[0.25em] text-emerald-700 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        Accepted Bookings
+                        <span class="ml-1 bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full text-[10px] font-black" th:text="${#lists.size(acceptedBookings)}">0</span>
+                    </h3>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <article th:each="booking : ${acceptedBookings}" class="bg-white rounded-3xl border-2 border-emerald-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+                            <!-- Green accent bar -->
+                            <div class="h-1.5 bg-gradient-to-r from-emerald-400 to-green-400"></div>
+                            <div class="p-5 space-y-4">
+                                <!-- Guide header -->
+                                <div class="flex items-start gap-4">
+                                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 text-white flex items-center justify-center font-bold text-lg shadow-sm uppercase shrink-0" th:text="${#strings.substring(booking.guide.name, 0, 1)}">G</div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center justify-between gap-2 flex-wrap">
+                                            <h4 class="font-extrabold text-slate-900 text-lg leading-tight truncate" th:text="${booking.guide.name}">Guide Name</h4>
+                                            <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 text-emerald-800 px-3 py-1 text-[10px] font-black uppercase tracking-wider border border-emerald-200 shrink-0">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                Accepted
+                                            </span>
+                                        </div>
+                                        <p class="text-[11px] font-bold text-slate-400 mt-0.5">
+                                            Booking <span th:text="${'#' + booking.id}">#1</span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Guide details grid -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    <div class="flex items-center gap-2 text-sm text-slate-600">
+                                        <i data-lucide="mail" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                                        <span class="font-semibold truncate" th:text="${booking.guide.email}">guide@example.com</span>
+                                    </div>
+                                    <div th:if="${booking.guide.phone != null and !booking.guide.phone.isEmpty()}" class="flex items-center gap-2 text-sm text-slate-600">
+                                        <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                                        <span class="font-semibold" th:text="${booking.guide.phone}">+94 77 123 4567</span>
+                                    </div>
+                                    <div th:if="${booking.guide.languages != null and !booking.guide.languages.isEmpty()}" class="flex items-center gap-2 text-sm text-slate-600">
+                                        <i data-lucide="languages" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                                        <span class="font-semibold truncate" th:text="${booking.guide.languages}">English</span>
+                                    </div>
+                                    <div th:if="${booking.guide.experience != null}" class="flex items-center gap-2 text-sm text-slate-600">
+                                        <i data-lucide="briefcase" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                                        <span class="font-semibold"><span th:text="${booking.guide.experience}">5</span> Yrs Experience</span>
+                                    </div>
+                                    <div th:if="${booking.guide.estimatedDayRate > 0}" class="flex items-center gap-2 text-sm text-slate-600">
+                                        <i data-lucide="wallet" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                                        <span class="font-semibold">Rs. <span th:text="${#numbers.formatDecimal(booking.guide.estimatedDayRate, 1, 'DEFAULT', 2, 'DEFAULT')}">0.00</span>/day</span>
+                                    </div>
+                                </div>
+
+                                <!-- Tourist note -->
+                                <div th:if="${booking.touristNote != null and !#strings.isEmpty(booking.touristNote)}" class="rounded-xl bg-slate-50 border border-slate-200 p-3">
+                                    <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Note</p>
+                                    <p class="text-xs font-semibold text-slate-600 leading-relaxed" th:text="${booking.touristNote}">Note text</p>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100">
+                                    <a th:href="@{/tourist/tour-plans/build(guideId=${booking.guide.id}, bookingId=${booking.id})}"
+                                       class="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl transition-colors shadow-sm text-xs">
+                                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                                        Build Tour Plan
+                                    </a>
+                                    <form th:action="@{/tourist/bookings/{id}/delete(id=${booking.id})}" method="post" class="m-0">
+                                        <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                        <button type="submit" onclick="return confirm('Cancel this booking request?')"
+                                                class="inline-flex items-center gap-1.5 border border-rose-200 bg-white hover:bg-rose-50 text-rose-700 font-bold px-4 py-2 rounded-xl transition-colors text-xs">
+                                            <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
+                                            Cancel
+                                        </button>
+                                    </form>
+                                    <a th:href="@{/tourist/guides/{id}(id=${booking.guide.id})}"
+                                       class="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold px-4 py-2 rounded-xl transition-colors text-xs ml-auto">
+                                        <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                        View Guide
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <!-- ───── Pending Bookings ───── -->
+                <div th:if="${pendingBookings != null and !#lists.isEmpty(pendingBookings)}" class="space-y-4">
+                    <h3 class="text-xs font-black uppercase tracking-[0.25em] text-amber-700 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                        Pending Bookings
+                        <span class="ml-1 bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full text-[10px] font-black" th:text="${#lists.size(pendingBookings)}">0</span>
+                    </h3>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <article th:each="booking : ${pendingBookings}" class="bg-white rounded-3xl border-2 border-amber-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+                            <!-- Yellow accent bar -->
+                            <div class="h-1.5 bg-gradient-to-r from-amber-400 to-yellow-400"></div>
+                            <div class="p-5 space-y-4">
+                                <!-- Guide header -->
+                                <div class="flex items-start gap-4">
+                                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-yellow-600 text-white flex items-center justify-center font-bold text-lg shadow-sm uppercase shrink-0" th:text="${#strings.substring(booking.guide.name, 0, 1)}">G</div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center justify-between gap-2 flex-wrap">
+                                            <h4 class="font-extrabold text-slate-900 text-lg leading-tight truncate" th:text="${booking.guide.name}">Guide Name</h4>
+                                            <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 text-amber-800 px-3 py-1 text-[10px] font-black uppercase tracking-wider border border-amber-200 shrink-0">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                                Pending Approval
+                                            </span>
+                                        </div>
+                                        <p class="text-[11px] font-bold text-slate-400 mt-0.5">
+                                            Booking <span th:text="${'#' + booking.id}">#1</span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Guide details grid -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    <div class="flex items-center gap-2 text-sm text-slate-600">
+                                        <i data-lucide="mail" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                                        <span class="font-semibold truncate" th:text="${booking.guide.email}">guide@example.com</span>
+                                    </div>
+                                    <div th:if="${booking.guide.phone != null and !booking.guide.phone.isEmpty()}" class="flex items-center gap-2 text-sm text-slate-600">
+                                        <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                                        <span class="font-semibold" th:text="${booking.guide.phone}">+94 77 123 4567</span>
+                                    </div>
+                                    <div th:if="${booking.guide.languages != null and !booking.guide.languages.isEmpty()}" class="flex items-center gap-2 text-sm text-slate-600">
+                                        <i data-lucide="languages" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                                        <span class="font-semibold truncate" th:text="${booking.guide.languages}">English</span>
+                                    </div>
+                                    <div th:if="${booking.guide.experience != null}" class="flex items-center gap-2 text-sm text-slate-600">
+                                        <i data-lucide="briefcase" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                                        <span class="font-semibold"><span th:text="${booking.guide.experience}">5</span> Yrs Experience</span>
+                                    </div>
+                                    <div th:if="${booking.guide.estimatedDayRate > 0}" class="flex items-center gap-2 text-sm text-slate-600">
+                                        <i data-lucide="wallet" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                                        <span class="font-semibold">Rs. <span th:text="${#numbers.formatDecimal(booking.guide.estimatedDayRate, 1, 'DEFAULT', 2, 'DEFAULT')}">0.00</span>/day</span>
+                                    </div>
+                                </div>
+
+                                <!-- Tourist note -->
+                                <div th:if="${booking.touristNote != null and !#strings.isEmpty(booking.touristNote)}" class="rounded-xl bg-slate-50 border border-slate-200 p-3">
+                                    <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Note</p>
+                                    <p class="text-xs font-semibold text-slate-600 leading-relaxed" th:text="${booking.touristNote}">Note text</p>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100">
+                                    <a th:href="@{/tourist/tour-plans/build(guideId=${booking.guide.id}, bookingId=${booking.id})}"
+                                       class="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl transition-colors shadow-sm text-xs">
+                                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                                        Build Tour Plan
+                                    </a>
+                                    <form th:action="@{/tourist/bookings/{id}/delete(id=${booking.id})}" method="post" class="m-0">
+                                        <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                        <button type="submit" onclick="return confirm('Cancel this booking request?')"
+                                                class="inline-flex items-center gap-1.5 border border-rose-200 bg-white hover:bg-rose-50 text-rose-700 font-bold px-4 py-2 rounded-xl transition-colors text-xs">
+                                            <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
+                                            Cancel
+                                        </button>
+                                    </form>
+                                    <a th:href="@{/tourist/guides/{id}(id=${booking.guide.id})}"
+                                       class="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold px-4 py-2 rounded-xl transition-colors text-xs ml-auto">
+                                        <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                        View Guide
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Guides Grid -->
+            <div th:if="${#lists.isEmpty(guides)}" class="bg-white rounded-3xl border border-slate-200 shadow-sm p-12 text-center max-w-xl mx-auto mt-6">
+                <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="user-x" class="w-8 h-8 text-slate-400"></i>
+                </div>
+                <h4 class="text-lg font-bold text-slate-800 mb-2">No Guides Found</h4>
+                <p class="text-sm text-slate-500">No guides match your search criteria. Try clearing or relaxing the filters.</p>
+            </div>
+
+            <div th:if="${!#lists.isEmpty(guides)}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <a th:each="g : ${guides}" th:href="@{/tourist/guides/{id}(id=${g.id})}" class="group bg-white rounded-3xl border border-slate-200 hover:border-blue-300 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between overflow-hidden">
+                    
+                    <!-- Header of Card -->
+                    <div class="relative h-20 bg-gradient-to-r from-blue-50 to-indigo-50/50 border-b border-slate-100">
+                        <div class="absolute -bottom-6 left-6">
+                            <div class="w-14 h-14 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xl shadow-md border-4 border-white uppercase" th:text="${#strings.substring(g.name, 0, 1)}">
+                                G
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="p-6 pt-8 flex-1 flex flex-col justify-between">
+                        <div>
+                            <!-- Name and core details -->
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-extrabold text-slate-900 text-lg leading-tight group-hover:text-blue-600 transition-colors" th:text="${g.name}">Nimal Perera</h4>
+                                    <p class="text-xs text-slate-500 font-bold mt-1.5 flex items-center gap-1.5">
+                                        <i data-lucide="briefcase" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <span th:text="${g.experience} ?: '5+'">5</span> Years Experience
+                                        <span th:if="${g.gender != null or g.getAge() != null}"> • </span>
+                                        <span th:if="${g.gender != null}" th:text="${g.gender}">Male</span>
+                                        <span th:if="${g.gender != null and g.getAge() != null}">, </span>
+                                        <span th:if="${g.getAge() != null}" th:text="${g.getAge() + ' Yrs'}">28 Yrs</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Bio description -->
+                            <p class="text-slate-600 text-xs mt-4 leading-relaxed line-clamp-3" 
+                               th:text="${g.description} ?: 'Local tour guide sharing the rich history, culture, and nature of Sri Lanka. Specialized in wildlife safaris and historical walks.'"></p>
+
+                            <!-- Languages Spoken -->
+                            <div class="mt-4 border-t border-slate-100 pt-4">
+                                <h5 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Languages Spoken</h5>
+                                <div class="flex flex-wrap gap-1.5" th:if="${g.languages != null}">
+                                    <span th:each="lang : ${#strings.arraySplit(g.languages, ',')}" 
+                                          th:text="${#strings.trim(lang)}"
+                                          class="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pricing and Actions -->
+                        <div class="mt-6 border-t border-slate-100 pt-4 flex justify-between items-center">
+                            <div>
+                                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Estimated Price</span>
+                                <div class="flex items-baseline gap-1 mt-0.5" th:if="${g.estimatedDayRate > 0}">
+                                    <span class="text-lg font-black text-slate-900" th:text="${'Rs. ' + #numbers.formatDecimal(g.estimatedDayRate, 1, 'DEFAULT', 2, 'DEFAULT')}">Rs. 320.00</span>
+                                    <span class="text-[10px] text-slate-500 font-bold">/ day</span>
+                                </div>
+                                <div class="flex items-baseline gap-1 mt-0.5" th:if="${g.estimatedDayRate <= 0}">
+                                    <span class="text-sm font-bold text-slate-500">Contact for Rate</span>
+                                </div>
+                            </div>
+                            
+                            <span class="bg-blue-600 group-hover:bg-blue-700 text-white font-bold py-2.5 px-5 rounded-xl shadow-md shadow-blue-200 group-hover:shadow-lg transition-all text-xs flex items-center gap-1.5">
+                                <i data-lucide="eye" class="w-4 h-4"></i> View Details
+                            </span>
+                        </div>
+
+                    </div>
+
+                </a>
+            </div>
+            
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | Sri Lanka Tours</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primaryBlue: '#0056b3', /* Solid blue from image */
+                        oceanBlue: '#0077B6',
+                        lightBlue: '#f0f4f8',
+                        textDark: '#1e293b',
+                        textGray: '#64748b'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        
+        .left-sidebar {
+            background-image: url('/images/sri_lanka_collage.png');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        .left-sidebar::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(240, 248, 255, 0.3) 0%, rgba(2, 132, 199, 0.4) 100%);
+            z-index: 1;
+        }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 16px 12px 42px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            font-size: 0.875rem;
+            color: #334155;
+            transition: all 0.2s ease;
+        }
+        .input-field:focus {
+            border-color: #0056b3;
+            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
+            outline: none;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            width: 18px;
+            height: 18px;
+        }
+
+        .gender-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        .gender-btn.selected {
+            border-color: #0056b3;
+            background-color: #f0f7ff;
+            color: #0056b3;
+        }
+        
+        .eye-btn {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+        .eye-btn:hover { color: #475569; }
+
+        /* Custom scrollbar for form area */
+        .form-container {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col py-0 px-0 sm:py-0 sm:px-0">
+
+    <!-- Replace top navigation with the shared header fragment -->
+    <header th:replace="~{fragments/header :: header('register')}"></header>
+
+    <div class="py-8 px-4 flex justify-center w-full">
+        <!-- Main Content Container -->
+        <main class="w-full max-w-7xl bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden flex flex-col md:flex-row h-auto md:h-[800px]">
+            
+            <!-- Left Sidebar (Image & Info) -->
+            <div class="hidden md:flex w-full md:w-[40%] left-sidebar p-10 flex-col relative overflow-hidden">
+                <div class="relative z-10 flex flex-col h-full">
+                    <div class="mt-8">
+                        <h2 class="text-4xl lg:text-5xl font-black text-slate-900 leading-tight mb-4 drop-shadow-md">
+                            Explore<br>Sri Lanka
+                        </h2>
+                        <p class="text-slate-900 text-sm font-bold max-w-[280px] leading-relaxed drop-shadow-md">
+                            Join our community and discover amazing places with expert local guides.
+                        </p>
+                    </div>
+
+                    <div class="mt-auto mb-8">
+                        <div class="glass-panel p-6 shadow-xl">
+                            <div class="flex items-start gap-4 mb-6">
+                                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center shrink-0">
+                                    <i data-lucide="map-pin" class="w-5 h-5 text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-900 mb-0.5">Discover Top Destinations</h4>
+                                    <p class="text-xs text-slate-600 font-medium">Find the best places to visit around Sri Lanka.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-4 mb-6">
+                                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center shrink-0">
+                                    <i data-lucide="user" class="w-5 h-5 text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-900 mb-0.5">Book Local Guides</h4>
+                                    <p class="text-xs text-slate-600 font-medium">Connect with certified and friendly tour guides.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center shrink-0">
+                                    <i data-lucide="shield-check" class="w-5 h-5 text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-900 mb-0.5">Secure & Trusted</h4>
+                                    <p class="text-xs text-slate-600 font-medium">We ensure a safe and trusted travel experience.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 text-sm font-bold text-slate-900 drop-shadow-md">
+                        Already have an account? <a th:href="@{/login}" class="text-blue-800 hover:text-blue-900 underline decoration-2 underline-offset-2">Login</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Form Section -->
+            <div class="w-full md:w-[60%] bg-white form-container overflow-y-auto px-6 py-10 lg:px-16 lg:py-12 relative">
+                
+                <div class="max-w-xl mx-auto">
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-md">
+                            <i data-lucide="user" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-900">Create Your Account</h2>
+                            <p class="text-sm text-slate-500 font-medium mt-0.5">Register to start your journey with us</p>
+                        </div>
+                    </div>
+
+                    <div th:if="${error}" class="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
+                        <span th:text="${error}">Please fix the highlighted fields.</span>
+                    </div>
+
+                    <form th:action="@{/register}" method="post" enctype="multipart/form-data" onsubmit="return validateForm()" class="space-y-5">
+                        <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <!-- Role Selection Tabs -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">I want to register as a <span class="text-red-500">*</span></label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <button type="button" id="roleTouristBtn" class="gender-btn selected flex items-center justify-center gap-2 py-3" onclick="selectRole('TOURIST')">
+                                    <i data-lucide="plane" class="w-4 h-4"></i>
+                                    Tourist
+                                </button>
+                                <button type="button" id="roleGuideBtn" class="gender-btn flex items-center justify-center gap-2 py-3" onclick="selectRole('GUIDE')">
+                                    <i data-lucide="users" class="w-4 h-4"></i>
+                                    Tour Guide
+                                </button>
+                                <button type="button" id="roleAdminBtn" class="gender-btn flex items-center justify-center gap-2 py-3" onclick="selectRole('ADMIN')">
+                                    <i data-lucide="shield" class="w-4 h-4"></i>
+                                    Admin
+                                </button>
+                            </div>
+                            <input type="hidden" name="role" id="roleInput" value="TOURIST">
+                        </div>
+
+                        <!-- Basic Fields (Always Visible) -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">Full Name <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <i data-lucide="user" class="input-icon"></i>
+                                <input type="text" name="name" placeholder="Enter your full name" required class="input-field">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Email Address <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i data-lucide="mail" class="input-icon"></i>
+                                    <input type="email" name="email" placeholder="Enter your email" required class="input-field">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Phone Number <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i data-lucide="phone" class="input-icon"></i>
+                                    <input type="tel" name="phone" placeholder="Enter your phone number" required class="input-field">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Password <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i data-lucide="lock" class="input-icon"></i>
+                                    <input type="password" id="password" name="password" placeholder="Create a password" required class="input-field">
+                                    <i data-lucide="eye-off" id="togglePassword" class="eye-btn"></i>
+                                </div>
+                                <p class="text-[10px] text-slate-500 mt-1.5 font-medium">At least 8 characters with letters and numbers.</p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Confirm Password <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i data-lucide="lock" class="input-icon"></i>
+                                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required class="input-field">
+                                    <i data-lucide="eye-off" id="toggleConfirmPassword" class="eye-btn"></i>
+                                </div>
+                                <p id="passwordError" class="text-xs text-red-500 mt-1 font-bold hidden">Passwords do not match.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Date of Birth</label>
+                                <div class="relative">
+                                    <i data-lucide="calendar" class="input-icon"></i>
+                                    <input type="date" name="dob" class="input-field text-slate-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Gender</label>
+                                <div class="grid grid-cols-3 gap-3">
+                                    <button type="button" class="gender-btn selected" onclick="selectGender(this, 'Male')">
+                                        Male
+                                    </button>
+                                    <button type="button" class="gender-btn" onclick="selectGender(this, 'Female')">
+                                        Female
+                                    </button>
+                                    <button type="button" class="gender-btn" onclick="selectGender(this, 'Other')">
+                                        Other
+                                    </button>
+                                    <input type="hidden" name="gender" id="genderInput" value="Male">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tourist Specific Fields Section -->
+                        <div id="touristSection" class="space-y-5">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Country <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i data-lucide="globe" class="input-icon"></i>
+                                    <input type="text" name="country" id="countryInput" placeholder="Enter your country of origin" required class="input-field">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Guide Specific Fields Section (Initially Hidden) -->
+                        <div id="guideSection" class="space-y-5 hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1.5">NIC Number <span class="text-red-500">*</span></label>
+                                    <div class="relative">
+                                        <i data-lucide="credit-card" class="input-icon"></i>
+                                        <input type="text" name="nic" id="nicInput" placeholder="Enter NIC number" class="input-field">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Hourly Rate (Rs./hr) <span class="text-red-500">*</span></label>
+                                    <div class="relative">
+                                        <i data-lucide="dollar-sign" class="input-icon"></i>
+                                        <input type="number" step="0.01" name="hourlyRate" id="hourlyRateInput" placeholder="Enter your hourly rate" class="input-field">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div class="col-span-1 md:col-span-2">
+                                    <label class="block text-xs font-bold text-slate-700 mb-2">Languages Spoken <span class="text-red-500">*</span></label>
+                                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
+                                        <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                            <input type="checkbox" value="English" class="lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                            English
+                                        </label>
+                                        <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                            <input type="checkbox" value="Sinhala" class="lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                            Sinhala (සිංහල)
+                                        </label>
+                                        <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                            <input type="checkbox" value="Tamil" class="lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                            Tamil (தமிழ்)
+                                        </label>
+                                        <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                            <input type="checkbox" value="Chinese" class="lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                            Chinese (Simplified) (简体中文)
+                                        </label>
+                                        <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                            <input type="checkbox" value="German" class="lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                            German (Deutsch)
+                                        </label>
+                                        <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                            <input type="checkbox" value="French" class="lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                            French (Français)
+                                        </label>
+                                        <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                            <input type="checkbox" value="Russian" class="lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                            Russian (Русский)
+                                        </label>
+                                        <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                            <input type="checkbox" value="Japanese" class="lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                            Japanese (日本語)
+                                        </label>
+                                        <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                            <input type="checkbox" value="Korean" class="lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                            Korean (한국어)
+                                        </label>
+                                        <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                            <input type="checkbox" value="Hindi" class="lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                            Hindi (हिन्दी)
+                                        </label>
+                                        <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                            <input type="checkbox" value="Arabic" class="lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                            Arabic (العربية)
+                                        </label>
+                                        <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                            <input type="checkbox" value="Spanish" class="lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                            Spanish (Español)
+                                        </label>
+                                        <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                            <input type="checkbox" value="Italian" class="lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                            Italian (Italiano)
+                                        </label>
+                                        <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                            <input type="checkbox" value="Dutch" class="lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                            Dutch (Nederlands)
+                                        </label>
+                                        <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                            <input type="checkbox" value="Portuguese" class="lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                            Portuguese (Português)
+                                        </label>
+                                    </div>
+                                    <input type="hidden" name="languages" id="languagesInput" value="">
+                                </div>
+                                <div class="col-span-1 md:col-span-2 mt-4">
+                                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Years of Experience <span class="text-red-500">*</span></label>
+                                    <div class="relative">
+                                        <i data-lucide="briefcase" class="input-icon"></i>
+                                        <input type="text" name="experience" id="experienceInput" placeholder="e.g. 5 Years" class="input-field">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Profile Photo <span class="text-red-500">*</span></label>
+                                    <input type="file" name="profilePhotoFile" id="profilePhotoInput" class="w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Guide Certifications <span class="text-red-500">*</span></label>
+                                    <input type="file" name="certificationFile" id="certificationInput" class="w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Short Bio / Description <span class="text-red-500">*</span></label>
+                                <textarea name="description" id="descriptionInput" rows="3" placeholder="Tell travelers about yourself, your guiding styles, and favorite locations..." class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:border-blue-600 focus:ring-3 focus:ring-blue-600/10 focus:outline-none"></textarea>
+                            </div>
+                        </div>
+
+
+
+                        <div class="flex items-start gap-3 mt-8">
+                            <input type="checkbox" id="terms" required class="w-4 h-4 mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                            <label for="terms" class="text-xs font-medium text-slate-700">
+                                I agree to the <a th:href="@{/terms}" class="text-blue-600 hover:underline font-semibold" target="_blank">Terms & Conditions</a> and <a th:href="@{/privacy}" class="text-blue-600 hover:underline font-semibold" target="_blank">Privacy Policy</a> <span class="text-red-500">*</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="w-full bg-primaryBlue hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors mt-6 shadow-md shadow-blue-600/20 mb-4">
+                            Create Account
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+
+    <!-- Shared Footer -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <!-- Scripts -->
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+
+
+        // Gender Selection Logic
+        function selectGender(btn, value) {
+            // Remove selected class from all
+            document.querySelectorAll('.gender-btn').forEach(b => {
+                b.classList.remove('selected', 'border-blue-600', 'bg-blue-50', 'text-blue-600');
+                b.classList.add('border-slate-300', 'bg-white', 'text-slate-700');
+            });
+            // Add to clicked
+            btn.classList.add('selected', 'border-blue-600', 'bg-blue-50', 'text-blue-600');
+            btn.classList.remove('border-slate-300', 'bg-white', 'text-slate-700');
+            // Update hidden input
+            document.getElementById('genderInput').value = value;
+        }
+
+        // Toggle Password Visibility
+        function setupToggle(inputId, toggleId) {
+            const input = document.getElementById(inputId);
+            const toggle = document.getElementById(toggleId);
+            
+            toggle.addEventListener('click', function() {
+                const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                input.setAttribute('type', type);
+                
+                // Update icon
+                if (type === 'text') {
+                    toggle.setAttribute('data-lucide', 'eye');
+                } else {
+                    toggle.setAttribute('data-lucide', 'eye-off');
+                }
+                lucide.createIcons();
+            });
+        }
+
+        setupToggle('password', 'togglePassword');
+        setupToggle('confirmPassword', 'toggleConfirmPassword');
+
+        // Form Validation
+        function validateForm() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorMsg = document.getElementById('passwordError');
+            const confirmInput = document.getElementById('confirmPassword');
+            
+            if (password !== confirmPassword) {
+                errorMsg.classList.remove('hidden');
+                confirmInput.style.borderColor = '#ef4444'; // red-500
+                return false;
+            }
+            
+            errorMsg.classList.add('hidden');
+            confirmInput.style.borderColor = '#cbd5e1'; // reset
+
+            // Validate languages checklist if GUIDE
+            const role = document.getElementById('roleInput').value;
+            if (role === 'GUIDE') {
+                const languages = document.getElementById('languagesInput').value;
+                if (!languages || languages.trim() === '') {
+                    alert("Please select at least one language spoken.");
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Clear error on type
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            document.getElementById('passwordError').classList.add('hidden');
+            this.style.borderColor = '#cbd5e1';
+        });
+
+        // Languages selection script
+        function updateLanguages() {
+            const checkedLangs = [];
+            document.querySelectorAll('.lang-checkbox:checked').forEach(cb => {
+                checkedLangs.push(cb.value);
+            });
+            document.getElementById('languagesInput').value = checkedLangs.join(', ');
+        }
+
+        document.querySelectorAll('.lang-checkbox').forEach(cb => {
+            cb.addEventListener('change', updateLanguages);
+        });
+
+        // Role Toggling Logic
+        function selectRole(role) {
+            const touristBtn = document.getElementById('roleTouristBtn');
+            const guideBtn = document.getElementById('roleGuideBtn');
+            const adminBtn = document.getElementById('roleAdminBtn');
+            const roleInput = document.getElementById('roleInput');
+            const touristSec = document.getElementById('touristSection');
+            const guideSec = document.getElementById('guideSection');
+
+            // input elements
+            const countryInput = document.getElementById('countryInput');
+            const nicInput = document.getElementById('nicInput');
+            const hourlyRateInput = document.getElementById('hourlyRateInput');
+            const experienceInput = document.getElementById('experienceInput');
+            const profilePhotoInput = document.getElementById('profilePhotoInput');
+            const certificationInput = document.getElementById('certificationInput');
+            const descriptionInput = document.getElementById('descriptionInput');
+
+            roleInput.value = role;
+
+            [touristBtn, guideBtn, adminBtn].forEach(btn => {
+                if (btn) {
+                    btn.classList.remove('selected', 'border-blue-600', 'bg-blue-50', 'text-blue-600');
+                    btn.classList.add('border-slate-300', 'bg-white', 'text-slate-700');
+                }
+            });
+
+            if (role === 'TOURIST') {
+                touristBtn.classList.add('selected', 'border-blue-600', 'bg-blue-50', 'text-blue-600');
+                touristBtn.classList.remove('border-slate-300', 'bg-white', 'text-slate-700');
+
+                touristSec.classList.remove('hidden');
+                guideSec.classList.add('hidden');
+
+                // Update required status
+                countryInput.required = true;
+                nicInput.required = false;
+                hourlyRateInput.required = false;
+                experienceInput.required = false;
+                profilePhotoInput.required = false;
+                certificationInput.required = false;
+                descriptionInput.required = false;
+            } else if (role === 'ADMIN') {
+                adminBtn.classList.add('selected', 'border-blue-600', 'bg-blue-50', 'text-blue-600');
+                adminBtn.classList.remove('border-slate-300', 'bg-white', 'text-slate-700');
+
+                touristSec.classList.remove('hidden');
+                guideSec.classList.add('hidden');
+
+                // Update required status
+                countryInput.required = true;
+                nicInput.required = false;
+                hourlyRateInput.required = false;
+                experienceInput.required = false;
+                profilePhotoInput.required = false;
+                certificationInput.required = false;
+                descriptionInput.required = false;
+            } else {
+                guideBtn.classList.add('selected', 'border-blue-600', 'bg-blue-50', 'text-blue-600');
+                guideBtn.classList.remove('border-slate-300', 'bg-white', 'text-slate-700');
+
+                touristSec.classList.add('hidden');
+                guideSec.classList.remove('hidden');
+
+                // Update required status
+                countryInput.required = false;
+                nicInput.required = true;
+                hourlyRateInput.required = true;
+                experienceInput.required = true;
+                profilePhotoInput.required = true;
+                certificationInput.required = true;
+                descriptionInput.required = true;
+            }
+            lucide.createIcons();
+        }
+
+        // Initialize role
+        selectRole('TOURIST');
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <aside th:fragment="sidebar(activePage)" class="admin-sidebar w-64 flex-shrink-0 flex flex-col relative z-20">
+        <style>
+            .admin-sidebar {
+                background: linear-gradient(180deg, #10213d 0%, #112b51 100%);
+                height: 100vh;
+                position: sticky;
+                top: 0;
+            }
+            .admin-sidebar .brand-panel {
+                background: #ffffff;
+                border-right: 1px solid #e2e8f0;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            .admin-sidebar .sidebar-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 16px;
+                margin: 4px 12px;
+                border-radius: 8px;
+                color: #a8c2e5;
+                font-size: 0.95rem;
+                font-weight: 600;
+                transition: all 0.2s ease;
+            }
+            .admin-sidebar .sidebar-item:hover {
+                color: #ffffff;
+                background: rgba(255, 255, 255, 0.08);
+            }
+            .admin-sidebar .sidebar-item.active {
+                color: #ffffff;
+                background: #0056b3;
+            }
+        </style>
+
+        <div class="brand-panel h-[72px] flex items-center gap-3 px-5 shrink-0">
+            <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-md shadow-blue-600/20 shrink-0">
+                <i data-lucide="map-pin" class="w-5 h-5"></i>
+            </div>
+            <div class="min-w-0">
+                <h1 class="text-base font-black text-blue-700 leading-tight tracking-tight">Sri Lanka Tours</h1>
+                <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Admin Dashboard</div>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4">
+            <a th:href="@{/defaultLoginRedirect}" th:class="${activePage == 'dashboard' ? 'sidebar-item active' : 'sidebar-item'}">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a th:href="@{/admin/users}" th:class="${activePage == 'users' ? 'sidebar-item active justify-between' : 'sidebar-item justify-between'}">
+                <span class="flex items-center gap-3">
+                    <i data-lucide="users" class="w-5 h-5"></i>
+                    <span>User Management</span>
+                </span>
+                <i data-lucide="chevron-right" class="w-4 h-4 opacity-60"></i>
+            </a>
+
+            <a th:href="@{/admin/destinations}" th:class="${activePage == 'destinations' ? 'sidebar-item active justify-between' : 'sidebar-item justify-between'}">
+                <span class="flex items-center gap-3">
+                    <i data-lucide="map-pin" class="w-5 h-5"></i>
+                    <span>Destination Management</span>
+                </span>
+                <i data-lucide="chevron-right" class="w-4 h-4 opacity-60"></i>
+            </a>
+
+            <a th:href="@{/admin/guides}" th:class="${activePage == 'guides' ? 'sidebar-item active justify-between' : 'sidebar-item justify-between'}">
+                <span class="flex items-center gap-3">
+                    <i data-lucide="contact" class="w-5 h-5"></i>
+                    <span>Tour Guide Management</span>
+                </span>
+                <i data-lucide="chevron-right" class="w-4 h-4 opacity-60"></i>
+            </a>
+
+            <a th:href="@{/admin/bookings}" th:class="${activePage == 'bookings' ? 'sidebar-item active justify-between' : 'sidebar-item justify-between'}">
+                <span class="flex items-center gap-3">
+                    <i data-lucide="calendar-check" class="w-5 h-5"></i>
+                    <span>Tour Guide Booking Management</span>
+                </span>
+                <i data-lucide="chevron-right" class="w-4 h-4 opacity-60"></i>
+            </a>
+
+            <a th:href="@{/admin/tour-plans}" th:class="${activePage == 'plans' ? 'sidebar-item active justify-between' : 'sidebar-item justify-between'}">
+                <span class="flex items-center gap-3">
+                    <i data-lucide="briefcase" class="w-5 h-5"></i>
+                    <span>Travel Plans</span>
+                </span>
+                <i data-lucide="chevron-right" class="w-4 h-4 opacity-60"></i>
+            </a>
+
+            <a th:href="@{/admin/reviews}" th:class="${activePage == 'reviews' ? 'sidebar-item active justify-between' : 'sidebar-item justify-between'}">
+                <span class="flex items-center gap-3">
+                    <i data-lucide="star" class="w-5 h-5"></i>
+                    <span>Review & Rating</span>
+                </span>
+                <i data-lucide="chevron-right" class="w-4 h-4 opacity-60"></i>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-700/50 mt-auto">
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="sidebar-item w-full text-left m-0">
+                    <i data-lucide="power" class="w-5 h-5"></i>
+                    <span>Logout</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+</body>
+</html>

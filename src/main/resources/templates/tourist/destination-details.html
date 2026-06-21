@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destination Details | Sri Lanka Tours</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .ocean-bg { background: linear-gradient(135deg, #f0f9ff 0%, #e8f4fd 50%, #f0f9ff 100%); min-height: 100vh; }
+        .info-card { transition: all 0.2s ease; }
+        .info-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(37,99,235,0.1); border-color: #bfdbfe; }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col ocean-bg">
+
+    <!-- Top Navigation Header -->
+    <header th:replace="~{fragments/header :: header('destinations')}"></header>
+
+    <!-- Main Workspace Area -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        
+        <!-- Main Body -->
+        <main class="flex-1 p-6 lg:p-10 max-w-7xl mx-auto w-full">
+            
+            <!-- Hero Image Section (Combined into single high-fidelity card) -->
+            <div class="relative w-full rounded-[2.5rem] overflow-hidden mb-8 shadow-2xl bg-slate-950 flex flex-col justify-between p-8 md:p-12 z-10" style="min-height: 520px;">
+                <!-- Background Image with Overlay -->
+                <img th:src="${destination.imageUrl} ?: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80'" 
+                     class="absolute inset-0 w-full h-full object-cover z-0" alt="Destination Image" 
+                     onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80';">
+                
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/20 to-transparent z-0"></div>
+
+                <!-- 1. Breadcrumbs (Absolute Top Left) -->
+                <div class="relative z-10 flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-200/90 mb-8">
+                    <a href="/" class="hover:text-white transition-colors">Home</a>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+                    <a href="/tourist/destinations" class="hover:text-white transition-colors">Destinations</a>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+                    <span class="hover:text-white transition-colors" th:text="${destination.category}">Category</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+                    <span class="text-blue-400" th:text="${destination.name}">Sigiriya</span>
+                </div>
+
+                <!-- 2. Mid & Bottom Section -->
+                <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mt-auto">
+                    <!-- Title, Description, and Tags -->
+                    <div class="max-w-2xl space-y-4 text-left">
+                        <!-- Big Title -->
+                        <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-none drop-shadow-md" th:text="${destination.name}">Sigiriya Rock Fortress</h1>
+
+                        <!-- Location Subtitle -->
+                        <div class="flex items-center gap-2 text-slate-200 font-semibold drop-shadow-sm">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-blue-400"></i>
+                            <span th:text="${destination.city + ', ' + destination.district + ', Sri Lanka'}">Cultural Triangle, Sri Lanka</span>
+                        </div>
+
+                        <!-- Description Overlay -->
+                        <p class="text-slate-200/90 text-sm md:text-base leading-relaxed max-w-xl font-medium drop-shadow-sm line-clamp-2 md:line-clamp-3" th:text="${destination.description}">
+                            Sigiriya, also known as Lion Rock, is an ancient rock fortress and UNESCO World Heritage Site, famous for its frescoes, landscape gardens and breathtaking views.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 3. Bottom Row of Icons inside Hero (Metrics) -->
+                <div class="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 mt-6 border-t border-white/10 text-left">
+                    <div class="flex items-center gap-3 text-white">
+                        <div class="w-10 h-10 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center border border-white/10">
+                            <i data-lucide="award" class="w-5 h-5 text-blue-300"></i>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] text-white/50 uppercase font-black tracking-wider">Classification</span>
+                            <span class="text-xs font-bold text-white text-left" th:text="${destination.category}">UNESCO Site</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 text-white">
+                        <div class="w-10 h-10 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center border border-white/10">
+                            <i data-lucide="calendar" class="w-5 h-5 text-blue-300"></i>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] text-white/50 uppercase font-black tracking-wider">Best Time</span>
+                            <span class="text-xs font-bold text-white" th:text="${destination.bestTimeToVisit ?: 'Not specified'}">Not specified</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 text-white">
+                        <div class="w-10 h-10 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center border border-white/10">
+                            <i data-lucide="clock" class="w-5 h-5 text-blue-300"></i>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] text-white/50 uppercase font-black tracking-wider">Open Hours</span>
+                            <span class="text-xs font-bold text-white" th:text="${destination.openingHours + ' - ' + destination.closingHours}">Half Day</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 text-white">
+                        <div class="w-10 h-10 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center border border-white/10">
+                            <i data-lucide="ticket" class="w-5 h-5 text-blue-300"></i>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] text-white/50 uppercase font-black tracking-wider">Entry Fee</span>
+                            <span class="text-xs font-bold text-white" th:text="${'LKR ' + #numbers.formatDecimal(destination.entryFee, 1, 0)}">Moderate</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Two-Column Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                
+                <!-- Left 2 Columns: Main Destination Info -->
+                <div class="lg:col-span-2 space-y-8 text-left">
+                    
+                    <!-- Overview Section -->
+                    <div class="bg-white rounded-3xl p-8 border border-blue-100 shadow-sm">
+                        <h3 class="text-2xl font-black text-slate-900 mb-4" th:text="${'About ' + destination.name}">About Destination</h3>
+                        <p class="text-slate-600 leading-relaxed text-base" th:text="${destination.description}">
+                            Destination description goes here.
+                        </p>
+                    </div>
+
+                    <!-- Reviews Section -->
+                    <div class="bg-white rounded-3xl border border-blue-100 shadow-sm p-8 space-y-6">
+                        <div class="flex items-center justify-between mb-2 pb-6 border-b border-slate-100">
+                            <div>
+                                <h3 class="text-xl font-extrabold text-slate-900">Reviews & Ratings</h3>
+                                <p class="text-sm text-slate-500 mt-1">Read overall tourist feedback or write your own review</p>
+                            </div>
+                        </div>
+
+                        <div th:if="${param.success != null or param.error != null}" class="rounded-2xl border p-4 text-sm font-semibold"
+                             th:classappend="${param.error != null} ? ' border-rose-200 bg-rose-50 text-rose-800' : ' border-emerald-200 bg-emerald-50 text-emerald-800'">
+                            <span th:if="${param.success != null and param.success[0] == 'reviewAdded'}">Your review has been submitted successfully.</span>
+                            <span th:if="${param.error != null and param.error[0] == 'invalidReview'}">Please provide a valid rating, name, and comment.</span>
+                            <span th:if="${param.error != null and param.error[0] == 'destinationNotFound'}">Destination was not found.</span>
+                            <span th:if="${param.error != null and param.error[0] == 'reviewFailed'}">We could not submit your review right now.</span>
+                        </div>
+
+                        <!-- Write Review Toggle Button -->
+                        <div>
+                            <button type="button" onclick="toggleReviewForm()" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-md transition-all">
+                                <i data-lucide="message-square" class="w-4 h-4"></i> Add Review
+                            </button>
+                        </div>
+
+                        <!-- Write Review Form (Hidden by default) -->
+                        <div id="reviewFormContainer" class="hidden bg-blue-50/50 rounded-2xl p-6 border border-blue-100 transition-all mt-6">
+                            <h4 class="font-bold text-blue-800 mb-4">Write a Review</h4>
+                            <form th:action="@{/tourist/destinations/{id}/reviews(id=${destination.id})}" method="post" class="space-y-4">
+                                <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-600 mb-2">Your Rating</label>
+                                        <div class="flex items-center gap-1 text-slate-200 cursor-pointer" id="rating-stars">
+                                            <i data-lucide="star" class="w-6 h-6 star-icon" data-value="1"></i>
+                                            <i data-lucide="star" class="w-6 h-6 star-icon" data-value="2"></i>
+                                            <i data-lucide="star" class="w-6 h-6 star-icon" data-value="3"></i>
+                                            <i data-lucide="star" class="w-6 h-6 star-icon" data-value="4"></i>
+                                            <i data-lucide="star" class="w-6 h-6 star-icon" data-value="5"></i>
+                                        </div>
+                                        <input type="hidden" name="rating" id="review-rating" value="0">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-600 mb-2">Full Name</label>
+                                        <input type="text" name="reviewerName" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white" placeholder="Enter your name">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-2">Review Comments</label>
+                                    <textarea name="comment" required rows="3" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white resize-none" placeholder="Share your experience..."></textarea>
+                                </div>
+                                <div class="text-right mt-2 flex justify-end gap-2">
+                                    <button type="button" onclick="toggleReviewForm()" class="px-5 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl transition-colors border border-slate-200 bg-white text-sm font-bold">Cancel</button>
+                                    <button type="submit" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm px-6 py-2.5 rounded-xl shadow-md transition-all">
+                                        <i data-lucide="send" class="w-4 h-4"></i> Submit Review
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Review List -->
+                        <div class="space-y-4 mt-8" th:if="${reviews != null and !#lists.isEmpty(reviews)}">
+                            <div th:each="review : ${reviews}" class="p-5 border border-slate-100 rounded-2xl flex gap-4 bg-white relative overflow-hidden shadow-sm">
+                                <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 shrink-0 flex items-center justify-center border-2 border-white shadow-sm z-10 font-bold text-lg" th:text="${#strings.substring(review.reviewerName, 0, 1)}">
+                                    A
+                                </div>
+                                <div class="flex-1 z-10">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <div class="flex items-center gap-2">
+                                            <h5 class="font-bold text-slate-900" th:text="${review.reviewerName}">John Doe</h5>
+                                            <span class="flex items-center gap-1 text-[10px] font-bold text-green-700 bg-green-50 border border-green-100 px-2 py-0.5 rounded-full"><i data-lucide="check-circle-2" class="w-3 h-3"></i> Verified</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-0.5 text-amber-400 mb-2">
+                                        <i th:each="star : ${#numbers.sequence(1, review.rating)}" data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                                        <i th:if="${review.rating < 5}" th:each="star : ${#numbers.sequence(review.rating + 1, 5)}" data-lucide="star" class="w-3.5 h-3.5 text-slate-300"></i>
+                                    </div>
+                                    <p class="text-slate-600 text-sm leading-relaxed" th:text="${review.comment}">Review comment goes here.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Booking & Action Cards -->
+                <div class="space-y-6">
+                    
+                    <!-- Details Card (Mockup Right Column Side-Card) -->
+                    <div class="bg-slate-50 border border-slate-100 shadow-sm rounded-3xl p-6 space-y-6 text-left">
+                        <!-- Location Detail -->
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-blue-100/50 text-blue-600 flex items-center justify-center shrink-0">
+                                <i data-lucide="map-pin" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Location</span>
+                                <span class="text-sm font-bold text-slate-800" th:text="${destination.city + ', ' + destination.district + ', Sri Lanka'}">Cultural Triangle, Sri Lanka</span>
+                            </div>
+                        </div>
+
+                        <!-- Best Time Detail -->
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-blue-100/50 text-blue-600 flex items-center justify-center shrink-0">
+                                <i data-lucide="calendar" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Best Time to Visit</span>
+                                <span class="text-sm font-bold text-slate-800" th:text="${destination.bestTimeToVisit ?: 'Not specified'}">Not specified</span>
+                            </div>
+                        </div>
+
+                        <!-- Time Required Detail -->
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-blue-100/50 text-blue-600 flex items-center justify-center shrink-0">
+                                <i data-lucide="clock" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Time Required</span>
+                                <span class="text-sm font-bold text-slate-800" th:text="${destination.openingHours + ' - ' + destination.closingHours}">3 - 4 Hours</span>
+                            </div>
+                        </div>
+
+                        <!-- Entrance Fee Detail -->
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-blue-100/50 text-blue-600 flex items-center justify-center shrink-0">
+                                <i data-lucide="ticket" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Entrance Fee</span>
+                                <span class="text-sm font-bold text-slate-800" th:text="${'LKR ' + #numbers.formatDecimal(destination.entryFee, 1, 'COMMA', 2, 'POINT') + ' (Rs)'}">LKR 5,000 (Foreigners) / LKR 500 (Sri Lankans)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Booking Card -->
+                    <div class="bg-white rounded-3xl border border-blue-100 shadow-md p-6 text-center space-y-4">
+                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
+                            <i data-lucide="calendar" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-extrabold text-slate-900 text-lg">Book a Guide</h4>
+                            <p class="text-xs text-slate-500 font-medium mt-1 leading-relaxed">Booking sends a request to your selected guide. After the request is sent, you can contact the guide and plan the tour together.</p>
+                        </div>
+                        <a href="/tourist/guides" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="users" class="w-4 h-4"></i> Find a Guide
+                        </a>
+                    </div>
+
+                    <!-- Add to Tour Plan Card -->
+                    <div class="bg-white rounded-3xl border border-blue-100 shadow-md p-6 text-center space-y-4">
+                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
+                            <i data-lucide="map" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-extrabold text-slate-900 text-lg">Custom Tour Plan</h4>
+                            <p class="text-xs text-slate-500 font-medium mt-1">Design your personalized itinerary</p>
+                        </div>
+                        <a th:href="@{/tourist/destinations/{id}/tour-plan(id=${destination.id})}" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i> Create Tour Plan
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <script>
+        lucide.createIcons();
+        function toggleReviewForm() {
+            const container = document.getElementById('reviewFormContainer');
+            if (container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+                container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        // Interactive Star Rating Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            let currentRating = 0;
+            const stars = document.querySelectorAll('.star-icon');
+            const ratingInput = document.getElementById('review-rating');
+
+            function updateStars(rating) {
+                stars.forEach(star => {
+                    if (parseInt(star.getAttribute('data-value')) <= rating) {
+                        star.classList.add('fill-current', 'text-amber-400');
+                        star.classList.remove('text-slate-200');
+                    } else {
+                        star.classList.remove('fill-current', 'text-amber-400');
+                        star.classList.add('text-slate-200');
+                    }
+                });
+            }
+
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    currentRating = parseInt(this.getAttribute('data-value'));
+                    ratingInput.value = currentRating;
+                    updateStars(currentRating);
+                });
+                star.addEventListener('mouseover', function() {
+                    updateStars(parseInt(this.getAttribute('data-value')));
+                });
+                star.addEventListener('mouseout', function() {
+                    updateStars(currentRating);
+                });
+            });
+        });
+    </script>
+    <script th:if="${param.error != null}">
+        window.addEventListener('load', function () {
+            const container = document.getElementById('reviewFormContainer');
+            if (container && container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+                container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overview | Sri Lanka Tours</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .ocean-bg { background: linear-gradient(135deg, #f0f9ff 0%, #e8f4fd 50%, #f0f9ff 100%); min-height: 100vh; }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col ocean-bg">
+
+    <!-- Top Navigation Header -->
+    <header th:replace="~{fragments/header :: header('overview')}"></header>
+
+    <!-- Page Header -->
+    <div class="relative w-full bg-[#f0f8ff] pt-12 pb-8 border-b border-blue-100">
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div class="flex items-center gap-2 text-sm font-semibold text-slate-500 mb-4">
+                <a href="/" class="hover:text-blue-600 transition-colors">Home</a>
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                <span class="text-blue-600">Overview</span>
+            </div>
+
+            <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-2">Overview</h1>
+            <p class="text-slate-600 font-medium max-w-2xl">Welcome to your Sri Lanka Tours dashboard.</p>
+        </div>
+    </div>
+
+    <!-- Main Workspace Area -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        
+        <!-- Main Body -->
+        <main class="flex-1 p-8 max-w-7xl mx-auto w-full space-y-8">
+            <!-- Stats Counters -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 transition-transform hover:-translate-y-1">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
+                        <i data-lucide="calendar-check-2" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Guide Bookings</span>
+                        <span class="text-2xl font-extrabold text-slate-800">4 Active</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 transition-transform hover:-translate-y-1">
+                    <div class="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center shrink-0 border border-green-100">
+                        <i data-lucide="map" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Tour Plans</span>
+                        <span class="text-2xl font-extrabold text-slate-800">2 Saved</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 transition-transform hover:-translate-y-1">
+                    <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100">
+                        <i data-lucide="star" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Reviews</span>
+                        <span class="text-2xl font-extrabold text-slate-800">12 Submitted</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 transition-transform hover:-translate-y-1">
+                    <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 border border-purple-100">
+                        <i data-lucide="bell" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Alerts</span>
+                        <span class="text-2xl font-extrabold text-slate-800">1 Unread</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Two Column Layout: Activity and Top Destinations -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Activity Logs & Real-Time Alerts -->
+                <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+                    <h4 class="font-extrabold text-slate-900 text-base border-b border-slate-100 pb-3 flex items-center gap-2">
+                        <i data-lucide="activity" class="w-4 h-4 text-slate-400"></i> Real-Time Alerts & Activities
+                    </h4>
+                    
+                    <div class="space-y-4">
+                        <div class="flex gap-4 items-start p-4 bg-blue-50/50 rounded-xl border border-blue-100/50 hover:bg-blue-50 transition-colors">
+                            <div class="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 shadow-sm">
+                                <i data-lucide="cloud-rain" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <span class="block text-sm font-extrabold text-blue-900">Weather Alert: High Rain in Kandy</span>
+                                <p class="text-slate-600 text-xs mt-1 font-medium leading-relaxed">Heavy rains expected near Knuckles region today. Tour guide bookings on Hold.</p>
+                                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mt-2">2 hours ago</span>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 items-start p-4 bg-green-50/50 rounded-xl border border-green-100/50 hover:bg-green-50 transition-colors">
+                            <div class="w-9 h-9 rounded-full bg-green-100 text-green-600 flex items-center justify-center shrink-0 shadow-sm">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <span class="block text-sm font-extrabold text-green-900">Booking Confirmed</span>
+                                <p class="text-slate-600 text-xs mt-1 font-medium leading-relaxed">Guide Aruna Perera confirmed your Sigiriya tour booking for 2026-05-28.</p>
+                                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mt-2">1 day ago</span>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 items-start p-4 bg-purple-50/50 rounded-xl border border-purple-100/50 hover:bg-purple-50 transition-colors">
+                            <div class="w-9 h-9 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center shrink-0 shadow-sm">
+                                <i data-lucide="star" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <span class="block text-sm font-extrabold text-purple-900">New Review Approved</span>
+                                <p class="text-slate-600 text-xs mt-1 font-medium leading-relaxed">Your review on Galle Fort has been approved and is now visible to other tourists.</p>
+                                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mt-2">3 days ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Featured Destinations -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+                    <h4 class="font-extrabold text-slate-900 text-base border-b border-slate-100 pb-3 flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-slate-400"></i> Recommended Places
+                    </h4>
+                    
+                    <div class="space-y-4">
+                        <div th:each="dest, iter : ${destinations}" th:if="${iter.index < 3}" class="flex gap-4 items-center p-2 rounded-xl hover:bg-slate-50 transition-colors">
+                            <img th:src="${dest.imageUrl} ?: 'https://images.unsplash.com/photo-1588598042453-37650d2f2960?auto=format&fit=crop&w=150&q=80'" class="w-16 h-16 rounded-xl object-cover bg-slate-100 shrink-0 shadow-sm" alt="Destination Image" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1588598042453-37650d2f2960?auto=format&fit=crop&w=150&q=80';">
+                            <div class="min-w-0 flex-1">
+                                <h5 class="font-bold text-slate-900 text-sm truncate" th:text="${dest.name}">Destination Name</h5>
+                                <div class="flex items-center gap-1 text-xs text-slate-500 font-medium mt-0.5">
+                                    <i data-lucide="map-pin" class="w-3 h-3"></i>
+                                    <span th:text="${dest.city}">City</span>
+                                </div>
+                                <div class="flex items-center gap-1 text-amber-500 text-[11px] font-bold mt-1">
+                                    <i data-lucide="star" class="w-3 h-3 fill-current"></i>
+                                    <span th:text="${dest.recommendationScore}">4.5</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

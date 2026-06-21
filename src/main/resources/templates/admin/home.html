@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Home | Sri Lanka Tours</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandBlue: '#0056b3',
+                        lightBg: '#f8fafc'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .analysis-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+        }
+        .hero-image {
+            min-height: 280px;
+            background-image: linear-gradient(180deg, rgba(15, 23, 42, 0.08), rgba(15, 23, 42, 0.16)), url('/images/sri_lanka_collage.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen bg-lightBg text-slate-800">
+
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('dashboard')}"></aside>
+
+    <div class="flex-1 flex flex-col min-w-0">
+        <header th:replace="~{fragments/admin-header :: header('Admin Dashboard', 'Welcome back to the system overview')}"></header>
+
+        <main class="flex-1 overflow-y-auto p-5 md:p-8">
+            <section class="mb-6">
+                <div class="bg-white border border-slate-200 rounded-lg p-5 md:p-7 mb-5">
+                    <div class="max-w-3xl">
+                        <p class="text-xs font-black uppercase tracking-widest text-blue-700 mb-2">System Overview</p>
+                        <h2 class="text-2xl md:text-3xl font-black text-slate-950 tracking-tight">Admin Home</h2>
+                        <p class="text-sm md:text-base text-slate-600 font-medium mt-3">
+                            Manage users, destinations, tours, and reviews from one focused dashboard.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="hero-image" role="img" aria-label="Sri Lanka travel destinations collage"></div>
+            </section>
+
+            <section>
+                <div class="flex items-end justify-between gap-4 mb-4">
+                    <div>
+                        <h3 class="text-xl font-black text-slate-950">Analysis</h3>
+                        <p class="text-sm font-semibold text-slate-500">Current totals from the system database</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+                    <div class="analysis-card">
+                        <div class="w-11 h-11 bg-blue-100 text-brandBlue rounded-lg flex items-center justify-center mb-5">
+                            <i data-lucide="users" class="w-6 h-6"></i>
+                        </div>
+                        <p class="text-sm font-bold text-slate-500">All Users</p>
+                        <p class="text-3xl font-black text-slate-950 mt-2" th:text="${totalUsers}">0</p>
+                    </div>
+
+                    <div class="analysis-card">
+                        <div class="w-11 h-11 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center mb-5">
+                            <i data-lucide="map-pin" class="w-6 h-6"></i>
+                        </div>
+                        <p class="text-sm font-bold text-slate-500">All Destinations</p>
+                        <p class="text-3xl font-black text-slate-950 mt-2" th:text="${totalDestinations}">0</p>
+                    </div>
+
+                    <div class="analysis-card">
+                        <div class="w-11 h-11 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center mb-5">
+                            <i data-lucide="route" class="w-6 h-6"></i>
+                        </div>
+                        <p class="text-sm font-bold text-slate-500">All Tours</p>
+                        <p class="text-3xl font-black text-slate-950 mt-2" th:text="${totalTours}">0</p>
+                    </div>
+
+                    <div class="analysis-card">
+                        <div class="w-11 h-11 bg-rose-100 text-rose-600 rounded-lg flex items-center justify-center mb-5">
+                            <i data-lucide="star" class="w-6 h-6"></i>
+                        </div>
+                        <p class="text-sm font-bold text-slate-500">All Reviews</p>
+                        <p class="text-3xl font-black text-slate-950 mt-2" th:text="${totalReviews}">0</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer th:replace="~{fragments/admin-footer :: footer}"></footer>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Tour Plan | Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { brandBlue: '#0056b3', lightBg: '#f8fafc' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .form-label { display: block; font-size: 0.72rem; font-weight: 900; color: #475569; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+        .form-input { width: 100%; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; font-size: 0.875rem; font-weight: 600; color: #0f172a; background: #fff; transition: border-color 0.15s; outline: none; }
+        .form-input:focus { border-color: #0056b3; box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.08); }
+    </style>
+</head>
+<body class="flex h-screen bg-lightBg overflow-hidden text-slate-800">
+
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('plans')}"></aside>
+
+    <main class="flex-1 flex flex-col min-w-0 bg-lightBg z-10">
+        <header th:replace="~{fragments/admin-header :: header('Edit Tour Plan', 'Update tour plan status, guide assignment, and pricing')}"></header>
+
+        <div class="flex-1 overflow-y-auto p-6 lg:p-8">
+            <div th:if="${error}" class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-center gap-3 shadow-sm">
+                <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                <span th:text="${error}" class="text-sm font-bold"></span>
+            </div>
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 text-sm text-slate-500 font-semibold mb-6">
+                <a href="/admin/tour-plans" class="flex items-center gap-1.5 hover:text-brandBlue transition">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Travel Plans
+                </a>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                <a th:href="@{/admin/tour-plans/{id}(id=${plan.id})}" class="hover:text-brandBlue transition" th:text="${'Plan #' + plan.id}">Plan #1</a>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                <span class="text-slate-800 font-black">Edit</span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Info Sidebar -->
+                <div class="lg:col-span-1 space-y-4">
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-5">
+                        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Tourist</div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center shrink-0">
+                                <i data-lucide="user" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="font-black text-slate-900" th:text="${plan.tourist.name}">Tourist Name</p>
+                                <p class="text-xs text-slate-500 font-medium" th:text="${plan.tourist.email}">email@example.com</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-5">
+                        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Destinations</div>
+                        <div th:if="${!#lists.isEmpty(plan.destinations)}" class="flex flex-wrap gap-1.5">
+                            <span th:each="dest : ${plan.destinations}" th:text="${dest.name}"
+                                  class="px-2 py-1 bg-slate-100 border border-slate-200 rounded text-xs font-bold text-slate-700">Dest</span>
+                        </div>
+                        <p th:if="${#lists.isEmpty(plan.destinations)}" class="text-slate-400 italic text-sm font-semibold">No destinations (guide booking)</p>
+                    </div>
+                </div>
+
+                <!-- Edit Form -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm">
+                        <div class="p-5 border-b border-slate-200">
+                            <h2 class="text-base font-black text-slate-900">Edit Tour Plan #<span th:text="${plan.id}">1</span></h2>
+                            <p class="text-xs text-slate-500 font-semibold mt-0.5">You can update the status, guide, dates and pricing</p>
+                        </div>
+
+                        <form th:action="@{/admin/tour-plans/{id}(id=${plan.id})}" method="post" class="p-6 space-y-5">
+                            <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                            <!-- Status -->
+                            <div>
+                                <label class="form-label">Plan Status <span class="text-rose-500">*</span></label>
+                                <select name="status" class="form-input">
+                                    <option th:each="s : ${statuses}" th:value="${s.name()}" th:text="${s.name()}" th:selected="${plan.status.name() == s.name()}">STATUS</option>
+                                </select>
+                            </div>
+
+                            <!-- Guide -->
+                            <div>
+                                <label class="form-label">Assigned Guide</label>
+                                <select name="guideId" class="form-input">
+                                    <option value="">— No Guide —</option>
+                                    <option th:each="g : ${guides}" th:value="${g.id}" th:text="${g.name}" th:selected="${plan.guide != null and plan.guide.id == g.id}">Guide Name</option>
+                                </select>
+                            </div>
+
+                            <!-- Dates -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="form-label">Start Date</label>
+                                    <input type="date" name="startDate" th:value="${plan.startDate}" class="form-input text-slate-600">
+                                </div>
+                                <div>
+                                    <label class="form-label">End Date</label>
+                                    <input type="date" name="endDate" th:value="${plan.endDate}" class="form-input text-slate-600">
+                                </div>
+                            </div>
+
+                            <!-- Total Cost -->
+                            <div>
+                                <label class="form-label">Total Estimated Cost (Rs.) <span class="text-rose-500">*</span></label>
+                                <input type="number" step="0.01" name="totalEstimatedCost" th:value="${plan.totalEstimatedCost}" required class="form-input" placeholder="0.00">
+                            </div>
+
+                            <div class="pt-4 border-t border-slate-100 flex items-center gap-3">
+                                <button type="submit" class="bg-brandBlue hover:bg-blue-700 text-white font-black py-2.5 px-6 rounded-lg flex items-center gap-2 text-sm shadow-sm transition">
+                                    <i data-lucide="save" class="w-4 h-4"></i> Save Changes
+                                </button>
+                                <a th:href="@{/admin/tour-plans/{id}(id=${plan.id})}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-5 rounded-lg text-sm transition">
+                                    Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer th:replace="~{fragments/admin-footer :: footer}"></footer>
+    </main>
+
+    <script>lucide.createIcons();</script>
+</body>
+</html>

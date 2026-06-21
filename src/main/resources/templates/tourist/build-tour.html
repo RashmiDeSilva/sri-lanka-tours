@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Tour Plan | Sri Lanka Tours</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(180deg, #f6f8fc 0%, #eef4fb 100%); }
+        .planner-card { box-shadow: 0 18px 40px rgba(15, 23, 42, 0.06); }
+        .counter-input::-webkit-outer-spin-button,
+        .counter-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .counter-input {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen flex-col text-slate-800 antialiased">
+
+    <header th:replace="~{fragments/header :: header('custom-plan')}"></header>
+
+    <div class="relative w-full border-b border-blue-100 bg-[#f0f8ff] pt-12 pb-8">
+        <div class="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="mb-4 flex items-center gap-2 text-sm font-semibold text-slate-500">
+                <a th:href="@{|/home/tourist/${#authentication.principal.user.id}|}" class="hover:text-blue-600 transition-colors">Dashboard</a>
+                <i data-lucide="chevron-right" class="h-4 w-4"></i>
+                <a th:href="@{/tourist/tour-plans}" class="hover:text-blue-600 transition-colors">Tour Plans</a>
+                <i data-lucide="chevron-right" class="h-4 w-4"></i>
+                <span class="text-blue-600">Custom Tour Plan</span>
+            </div>
+
+            <div class="flex flex-col gap-6 rounded-[2rem] border border-white/70 bg-white/95 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur md:flex-row md:items-end md:justify-between md:p-8">
+                <div>
+                    <div class="mb-4 inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2 text-xs font-black uppercase tracking-[0.28em] text-blue-700">
+                        <i data-lucide="sparkles" class="h-4 w-4"></i>
+                        Custom Plan Builder
+                    </div>
+                    <h1 class="mb-2 text-4xl font-black tracking-tight text-slate-950 md:text-5xl" th:text="${editingPlan != null ? 'Update Custom Tour Plan' : 'Build Custom Tour Plan'}">Build Custom Tour Plan</h1>
+                    <p class="max-w-2xl text-sm font-medium leading-relaxed text-slate-600 md:text-base" th:text="${editingPlan != null ? 'Review your saved itinerary, adjust destinations or dates, and resend the updated plan to your guide.' : 'Create your tour by selecting destinations, days, member counts, and a guide. The plan is saved to your tour page after submission.'}">
+                        Create your tour by selecting destinations, days, member counts, and a guide. The plan is saved to your tour page after submission.
+                    </p>
+                </div>
+
+                <a th:href="@{/tourist/tour-plans}" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50">
+                    <i data-lucide="arrow-left" class="h-4 w-4"></i>
+                    Back to Plans
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-1">
+        <div class="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+            <div th:if="${error}" class="mb-6 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 shadow-sm">
+                <i data-lucide="triangle-alert" class="mt-0.5 h-5 w-5 shrink-0"></i>
+                <span th:text="${error}">Please select a destination.</span>
+            </div>
+            <div th:if="${success}" class="mb-6 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 shadow-sm">
+                <i data-lucide="circle-check-big" class="mt-0.5 h-5 w-5 shrink-0"></i>
+                <span th:text="${success}">Your tour plan has been updated.</span>
+            </div>
+
+            <div th:if="${editingPlan != null}" class="mb-6 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-blue-900 shadow-sm">
+                <div class="flex items-start gap-3">
+                    <i data-lucide="pencil-line" class="mt-0.5 h-5 w-5 shrink-0"></i>
+                    <div>
+                        <p class="text-sm font-black">Editing saved plan #<span th:text="${editingPlan.id}">1</span></p>
+                        <p class="text-sm font-medium text-blue-800/90">Any changes you save here will be sent back to the selected guide, along with your note.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,1fr)_340px]">
+                <form id="tourForm" th:action="@{/tourist/tour-plans/create}" method="post" class="space-y-6">
+                    <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <input type="hidden" name="bookingId" th:value="${bookingId}">
+
+                    <section class="planner-card rounded-[2rem] border border-cyan-200 bg-cyan-50/70 p-6 md:p-8">
+                        <div class="mb-6 flex items-start gap-4">
+                            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-lg font-black text-white shadow-lg shadow-blue-200/60">1</div>
+                            <div>
+                                <h2 class="text-2xl font-black text-slate-950">Select Destinations</h2>
+                                <p class="mt-1 text-sm font-medium text-slate-500">Choose the places you want to visit.</p>
+                            </div>
+                        </div>
+
+                        <div id="selectedDestinationChips" class="mb-5 rounded-2xl border border-dashed border-cyan-300 bg-white/80 p-4 shadow-sm">
+                            <p class="text-sm text-cyan-900/70">No destinations selected yet.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                            <label th:each="dest : ${destinations}"
+                                   class="group flex cursor-pointer items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 transition has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50/60 has-[:checked]:shadow-md hover:border-blue-300">
+                                <input type="checkbox"
+                                       name="destinationIds"
+                                       th:value="${dest.id}"
+                                       th:checked="${selectedDestinationIds != null and #lists.contains(selectedDestinationIds, dest.id)}"
+                                       th:attr="data-name=${dest.name},data-fee=${dest.entryFee},data-location=${dest.getFormattedProvince() + ', ' + dest.district},data-image=${dest.imageUrl}"
+                                       class="h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                <div class="h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-slate-100 bg-slate-100">
+                                    <img th:src="${dest.imageUrl != null and !#strings.isEmpty(dest.imageUrl) ? dest.imageUrl : 'https://placehold.co/300x300/e2e8f0/475569?text=SL'}"
+                                         th:alt="${dest.name}"
+                                         class="h-full w-full object-cover">
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <h3 class="truncate text-base font-extrabold text-slate-900" th:text="${dest.name}">Sigiriya</h3>
+                                    <p class="mt-0.5 text-xs font-medium text-slate-500" th:text="${dest.getFormattedProvince() + ', ' + dest.district}">Central Province, Matale</p>
+                                    <div class="mt-2 flex items-center gap-2 text-sm font-bold text-blue-700">
+                                        <i data-lucide="landmark" class="h-4 w-4"></i>
+                                        <span>Rs. <span th:text="${#numbers.formatDecimal(dest.entryFee, 1, 'DEFAULT', 2, 'DEFAULT')}">30.00</span></span>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </section>
+
+                    <section class="planner-card rounded-[2rem] border border-slate-200 bg-white p-6 md:p-8">
+                        <div class="mb-6 flex items-start gap-4">
+                            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-blue-600 text-lg font-black text-white shadow-lg shadow-blue-200/60">2</div>
+                            <div>
+                                <h2 class="text-2xl font-black text-slate-950">Select Days</h2>
+                                <p class="mt-1 text-sm font-medium text-slate-500">Choose your start date and trip length.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+                            <div>
+                                <label class="mb-2 block text-sm font-bold text-slate-700">Start Date</label>
+                                <input type="date" id="startDate" name="startDate"
+                                       th:value="${startDate != null ? #temporals.format(startDate, 'yyyy-MM-dd') : ''}"
+                                       class="w-full rounded-2xl border-slate-200 px-4 py-3 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="mb-2 block text-sm font-bold text-slate-700">Trip Days</label>
+                                <input type="number" id="plannedDays" name="plannedDays" min="1" th:value="${plannedDays}"
+                                       class="w-full rounded-2xl border-slate-200 px-4 py-3 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <p class="mt-2 text-xs font-medium text-slate-500">This updates the end date automatically.</p>
+                            </div>
+                            <div>
+                                <label class="mb-2 block text-sm font-bold text-slate-700">End Date</label>
+                                <input type="date" id="endDate" name="endDate" readonly
+                                       th:value="${endDate != null ? #temporals.format(endDate, 'yyyy-MM-dd') : ''}"
+                                       class="w-full cursor-not-allowed rounded-2xl border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500 shadow-sm">
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="planner-card rounded-[2rem] border border-slate-200 bg-white p-6 md:p-8">
+                        <div class="mb-6 flex items-start gap-4">
+                            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-600 to-blue-600 text-lg font-black text-white shadow-lg shadow-blue-200/60">3</div>
+                            <div>
+                                <h2 class="text-2xl font-black text-slate-950">Tour Members</h2>
+                                <p class="mt-1 text-sm font-medium text-slate-500">Enter the number of travelers in each group.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                <div class="flex items-start justify-between gap-4">
+                                    <div>
+                                        <h3 class="text-sm font-black text-slate-900">Male Adults</h3>
+                                        <p class="text-xs font-medium text-slate-500">12+ years</p>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" data-stepper-button data-target="maleAdults" data-direction="-1" class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-lg font-black text-slate-500 transition hover:bg-slate-100">-</button>
+                                        <input id="maleAdults" name="maleAdults" type="number" min="0" value="0" class="counter-input w-16 rounded-xl border-slate-200 bg-white px-3 py-2 text-center text-sm font-bold shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <button type="button" data-stepper-button data-target="maleAdults" data-direction="1" class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-lg font-black text-slate-500 transition hover:bg-slate-100">+</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                <div class="flex items-start justify-between gap-4">
+                                    <div>
+                                        <h3 class="text-sm font-black text-slate-900">Female Adults</h3>
+                                        <p class="text-xs font-medium text-slate-500">12+ years</p>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" data-stepper-button data-target="femaleAdults" data-direction="-1" class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-lg font-black text-slate-500 transition hover:bg-slate-100">-</button>
+                                        <input id="femaleAdults" name="femaleAdults" type="number" min="0" value="0" class="counter-input w-16 rounded-xl border-slate-200 bg-white px-3 py-2 text-center text-sm font-bold shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <button type="button" data-stepper-button data-target="femaleAdults" data-direction="1" class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-lg font-black text-slate-500 transition hover:bg-slate-100">+</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                <div class="flex items-start justify-between gap-4">
+                                    <div>
+                                        <h3 class="text-sm font-black text-slate-900">Boys</h3>
+                                        <p class="text-xs font-medium text-slate-500">2 - 11 years</p>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" data-stepper-button data-target="boys" data-direction="-1" class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-lg font-black text-slate-500 transition hover:bg-slate-100">-</button>
+                                        <input id="boys" name="boys" type="number" min="0" value="0" class="counter-input w-16 rounded-xl border-slate-200 bg-white px-3 py-2 text-center text-sm font-bold shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <button type="button" data-stepper-button data-target="boys" data-direction="1" class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-lg font-black text-slate-500 transition hover:bg-slate-100">+</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                <div class="flex items-start justify-between gap-4">
+                                    <div>
+                                        <h3 class="text-sm font-black text-slate-900">Girls</h3>
+                                        <p class="text-xs font-medium text-slate-500">2 - 11 years</p>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" data-stepper-button data-target="girls" data-direction="-1" class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-lg font-black text-slate-500 transition hover:bg-slate-100">-</button>
+                                        <input id="girls" name="girls" type="number" min="0" value="0" class="counter-input w-16 rounded-xl border-slate-200 bg-white px-3 py-2 text-center text-sm font-bold shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <button type="button" data-stepper-button data-target="girls" data-direction="1" class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-lg font-black text-slate-500 transition hover:bg-slate-100">+</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                <div class="flex items-start justify-between gap-4">
+                                    <div>
+                                        <h3 class="text-sm font-black text-slate-900">Seniors</h3>
+                                        <p class="text-xs font-medium text-slate-500">60+ years</p>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" data-stepper-button data-target="seniors" data-direction="-1" class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-lg font-black text-slate-500 transition hover:bg-slate-100">-</button>
+                                        <input id="seniors" name="seniors" type="number" min="0" value="0" class="counter-input w-16 rounded-xl border-slate-200 bg-white px-3 py-2 text-center text-sm font-bold shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <button type="button" data-stepper-button data-target="seniors" data-direction="1" class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-lg font-black text-slate-500 transition hover:bg-slate-100">+</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                <div class="flex items-start justify-between gap-4">
+                                    <div>
+                                        <h3 class="text-sm font-black text-slate-900">Infants</h3>
+                                        <p class="text-xs font-medium text-slate-500">Below 2 years</p>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" data-stepper-button data-target="infants" data-direction="-1" class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-lg font-black text-slate-500 transition hover:bg-slate-100">-</button>
+                                        <input id="infants" name="infants" type="number" min="0" value="0" class="counter-input w-16 rounded-xl border-slate-200 bg-white px-3 py-2 text-center text-sm font-bold shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <button type="button" data-stepper-button data-target="infants" data-direction="1" class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-lg font-black text-slate-500 transition hover:bg-slate-100">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                            <div class="rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 shadow-sm">
+                                <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Adults</p>
+                                <p class="mt-1 text-2xl font-black text-slate-950" id="summaryAdults">0</p>
+                            </div>
+                            <div class="rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 shadow-sm">
+                                <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Children</p>
+                                <p class="mt-1 text-2xl font-black text-slate-950" id="summaryChildren">0</p>
+                            </div>
+                            <div class="rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 shadow-sm">
+                                <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Optional</p>
+                                <p class="mt-1 text-2xl font-black text-slate-950" id="summaryOptional">0</p>
+                            </div>
+                            <div class="rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 shadow-sm">
+                                <p class="text-xs font-black uppercase tracking-[0.24em] text-blue-500">Total Members</p>
+                                <p class="mt-1 text-2xl font-black text-blue-700" id="summaryTotalMembers">0</p>
+                            </div>
+                        </div>
+                        <p class="mt-3 text-xs font-medium text-slate-500">Seniors and infants are included in the total group count.</p>
+                    </section>
+
+                    <section class="planner-card rounded-[2rem] border border-amber-200 bg-amber-50/70 p-6 md:p-8">
+                        <div class="mb-6 flex items-start gap-4">
+                            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-600 to-blue-600 text-lg font-black text-white shadow-lg shadow-blue-200/60">4</div>
+                            <div>
+                                <h2 class="text-2xl font-black text-slate-950">Vehicle Reference</h2>
+                                <p class="mt-1 text-sm font-medium text-slate-500">Use these sample transport options as a planning reference for your trip.</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 rounded-2xl border border-blue-100 bg-white/85 p-4 text-sm text-blue-900 shadow-sm">
+                            <div class="flex items-start gap-3">
+                                <i data-lucide="info" class="mt-0.5 h-5 w-5 shrink-0"></i>
+                                <p class="font-medium">These vehicle examples are shown for travel planning only. Your final tour plan still focuses on destinations, dates, travelers, and guide assignment.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                            <article class="rounded-2xl border border-amber-200 bg-white/90 p-5 shadow-sm">
+                                <div class="flex items-center justify-between gap-3 mb-3">
+                                    <h3 class="text-base font-black text-slate-900">Sedan Car</h3>
+                                    <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-black uppercase tracking-wider text-blue-700">Rs. 12,000</span>
+                                </div>
+                                <p class="text-xs font-semibold text-slate-500 mb-3">1 - 3 passengers</p>
+                                <div class="space-y-1 text-sm text-slate-600">
+                                    <p><span class="font-bold text-slate-900">Comfort:</span> Air-conditioned</p>
+                                    <p><span class="font-bold text-slate-900">Use:</span> Solo travelers, couples, and small family trips.</p>
+                                    <p><span class="font-bold text-slate-900">Example:</span> Toyota Axio / Premio type</p>
+                                </div>
+                            </article>
+
+                            <article class="rounded-2xl border border-amber-200 bg-white/90 p-5 shadow-sm">
+                                <div class="flex items-center justify-between gap-3 mb-3">
+                                    <h3 class="text-base font-black text-slate-900">Compact SUV</h3>
+                                    <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-black uppercase tracking-wider text-blue-700">Rs. 16,000</span>
+                                </div>
+                                <p class="text-xs font-semibold text-slate-500 mb-3">1 - 4 passengers</p>
+                                <div class="space-y-1 text-sm text-slate-600">
+                                    <p><span class="font-bold text-slate-900">Comfort:</span> High comfort, extra space</p>
+                                    <p><span class="font-bold text-slate-900">Use:</span> Small family tours and mountain travel.</p>
+                                    <p><span class="font-bold text-slate-900">Example:</span> RAV4 / KDH small SUV type</p>
+                                </div>
+                            </article>
+
+                            <article class="rounded-2xl border border-amber-200 bg-white/90 p-5 shadow-sm">
+                                <div class="flex items-center justify-between gap-3 mb-3">
+                                    <h3 class="text-base font-black text-slate-900">Standard Van</h3>
+                                    <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-black uppercase tracking-wider text-blue-700">Rs. 20,000</span>
+                                </div>
+                                <p class="text-xs font-semibold text-slate-500 mb-3">4 - 8 passengers</p>
+                                <div class="space-y-1 text-sm text-slate-600">
+                                    <p><span class="font-bold text-slate-900">Comfort:</span> AC, comfortable seating</p>
+                                    <p><span class="font-bold text-slate-900">Use:</span> Family groups and friends' tours.</p>
+                                    <p><span class="font-bold text-slate-900">Example:</span> Toyota Hiace standard</p>
+                                </div>
+                            </article>
+
+                            <article class="rounded-2xl border border-amber-200 bg-white/90 p-5 shadow-sm">
+                                <div class="flex items-center justify-between gap-3 mb-3">
+                                    <h3 class="text-base font-black text-slate-900">High Roof Van</h3>
+                                    <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-black uppercase tracking-wider text-blue-700">Rs. 23,000</span>
+                                </div>
+                                <p class="text-xs font-semibold text-slate-500 mb-3">6 - 10 passengers</p>
+                                <div class="space-y-1 text-sm text-slate-600">
+                                    <p><span class="font-bold text-slate-900">Comfort:</span> AC, extra headroom</p>
+                                    <p><span class="font-bold text-slate-900">Use:</span> Tourist groups and long trips with luggage.</p>
+                                    <p><span class="font-bold text-slate-900">Example:</span> Hiace High Roof / Commuter type</p>
+                                </div>
+                            </article>
+
+                            <article class="rounded-2xl border border-amber-200 bg-white/90 p-5 shadow-sm">
+                                <div class="flex items-center justify-between gap-3 mb-3">
+                                    <h3 class="text-base font-black text-slate-900">Mini Bus</h3>
+                                    <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-black uppercase tracking-wider text-blue-700">Rs. 28,000</span>
+                                </div>
+                                <p class="text-xs font-semibold text-slate-500 mb-3">10 - 18 passengers</p>
+                                <div class="space-y-1 text-sm text-slate-600">
+                                    <p><span class="font-bold text-slate-900">Comfort:</span> AC, reclining seats</p>
+                                    <p><span class="font-bold text-slate-900">Use:</span> Medium group tours and company trips.</p>
+                                    <p><span class="font-bold text-slate-900">Example:</span> 15-seater tourist mini bus</p>
+                                </div>
+                            </article>
+
+                            <article class="rounded-2xl border border-amber-200 bg-white/90 p-5 shadow-sm">
+                                <div class="flex items-center justify-between gap-3 mb-3">
+                                    <h3 class="text-base font-black text-slate-900">Large Tourist Bus</h3>
+                                    <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-black uppercase tracking-wider text-blue-700">Rs. 40,000</span>
+                                </div>
+                                <p class="text-xs font-semibold text-slate-500 mb-3">20 - 45 passengers</p>
+                                <div class="space-y-1 text-sm text-slate-600">
+                                    <p><span class="font-bold text-slate-900">Comfort:</span> AC, tour guide seat, entertainment system</p>
+                                    <p><span class="font-bold text-slate-900">Use:</span> School trips, big group tours, and corporate tours.</p>
+                                    <p><span class="font-bold text-slate-900">Example:</span> Luxury coach bus</p>
+                                </div>
+                            </article>
+
+                            <article class="rounded-2xl border border-amber-200 bg-white/90 p-5 shadow-sm md:col-span-2 xl:col-span-1">
+                                <div class="flex items-center justify-between gap-3 mb-3">
+                                    <h3 class="text-base font-black text-slate-900">Tuk Tuk (Optional)</h3>
+                                    <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-black uppercase tracking-wider text-blue-700">Rs. 8,000</span>
+                                </div>
+                                <p class="text-xs font-semibold text-slate-500 mb-3">1 - 3 passengers</p>
+                                <div class="space-y-1 text-sm text-slate-600">
+                                    <p><span class="font-bold text-slate-900">Comfort:</span> Basic</p>
+                                    <p><span class="font-bold text-slate-900">Use:</span> Short distance, city rides, and local experience tours.</p>
+                                    <p><span class="font-bold text-slate-900">Example:</span> Sri Lanka tuk tuk</p>
+                                </div>
+                            </article>
+                        </div>
+                    </section>
+
+
+                    <section class="planner-card rounded-[2rem] border border-violet-200 bg-violet-50/70 p-6 md:p-8">
+                        <div class="mb-6 flex items-start gap-4">
+                            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-500 to-orange-500 text-lg font-black text-white shadow-lg shadow-orange-200/60">5</div>
+                            <div>
+                                <h2 class="text-2xl font-black text-slate-950">Select Tour Guide</h2>
+                                <p class="mt-1 text-sm font-medium text-slate-500">Choose an approved guide for the booking request. The note below will mention the guide you booked.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <label th:each="g : ${guides}"
+                                   class="group flex cursor-pointer items-center gap-4 rounded-2xl border border-violet-200 bg-white/90 p-4 shadow-sm transition has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50/60 has-[:checked]:shadow-md hover:border-blue-300">
+                                <input type="radio"
+                                       name="guideId"
+                                       th:value="${g.id}"
+                                       th:checked="${selectedGuideId != null and selectedGuideId == g.id}"
+                                       th:attr="data-name=${g.name},data-email=${g.email},data-price=${g.estimatedDayRate},data-languages=${g.languages}"
+                                       class="sr-only guide-radio">
+                                <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-blue-100 text-lg font-black text-blue-700">
+                                    <span th:text="${#strings.substring(g.name, 0, 1)}">G</span>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <h3 class="truncate text-base font-black text-slate-900" th:text="${g.name}">Guide Name</h3>
+                                    <p class="truncate text-xs font-medium text-slate-500" th:text="${g.email}">guide@email.com</p>
+                                    <div class="mt-2 flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-600">
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1">
+                                            <i data-lucide="star" class="h-3.5 w-3.5 text-amber-500 fill-current"></i>
+                                            <span th:text="${g.averageRating}">4.9</span>
+                                        </span>
+                                        <span class="rounded-full bg-slate-100 px-2.5 py-1" th:text="${g.languages != null and !#strings.isEmpty(g.languages) ? g.languages : 'Languages available'}">English, Sinhala</span>
+                                    </div>
+                                </div>
+                                <div class="rounded-full bg-blue-100 px-3 py-1 text-xs font-black uppercase tracking-wider text-blue-700">
+                                    Rs. <span th:text="${#numbers.formatDecimal(g.estimatedDayRate, 1, 'DEFAULT', 2, 'DEFAULT')}">0.00</span>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="mt-6 rounded-3xl border border-violet-100 bg-white/85 p-5 shadow-sm">
+                            <div class="flex items-center justify-between gap-3 mb-3">
+                                <label for="touristNote" class="text-sm font-black uppercase tracking-[0.24em] text-slate-500">Note for Your Guide</label>
+                                <span class="text-xs font-semibold text-blue-600">Shared with the selected guide</span>
+                            </div>
+                            <textarea id="touristNote"
+                                      name="touristNote"
+                                      rows="4"
+                                      placeholder="Booked guide: Your guide's name. Add any special requests, timing preferences, or reminders."
+                                      th:text="${touristNote}"
+                                      class="w-full rounded-2xl border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 resize-none"></textarea>
+                            <p class="mt-2 text-xs font-medium text-slate-500">If you leave this blank, the system will note the guide you selected so the guide can see who was booked.</p>
+                        </div>
+                    </section>
+
+                    <section class="planner-card rounded-[2rem] border border-blue-200 bg-blue-50/70 p-6 md:p-8">
+                        <div class="mb-6 flex items-start gap-4">
+                            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 text-lg font-black text-white shadow-lg shadow-indigo-200/60">6</div>
+                            <div>
+                                <h2 class="text-2xl font-black text-slate-950">Review & Save</h2>
+                                <p class="mt-1 text-sm font-medium text-slate-500">Check the estimated cost and save your custom tour plan.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                            <div class="rounded-3xl border border-slate-200 bg-white/85 p-5 shadow-sm">
+                                <h3 class="mb-4 text-sm font-black uppercase tracking-[0.24em] text-slate-400">Cost Breakdown</h3>
+                                <div class="space-y-3 text-sm font-semibold text-slate-700">
+                                    <div class="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 shadow-sm">
+                                        <span>Guide Fee (<span id="reviewDays">0</span> Days)</span>
+                                        <span id="reviewGuideFee">Rs. 0.00</span>
+                                    </div>
+                                    <div class="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 shadow-sm">
+                                        <span>Destination Entry Fees</span>
+                                        <span id="reviewDestFee">Rs. 0.00</span>
+                                    </div>
+                                    <div class="flex items-center justify-between rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-base font-black text-blue-700 shadow-sm">
+                                        <span>Total Estimated Amount</span>
+                                        <span id="reviewTotalFee">Rs. 0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="rounded-3xl border border-blue-100 bg-white/85 p-5 text-blue-950 shadow-sm">
+                                <h3 class="mb-3 text-sm font-black uppercase tracking-[0.24em] text-blue-500">Before You Save</h3>
+                                <div class="space-y-3 text-sm font-medium leading-relaxed text-blue-900">
+                                    <p>Your selected plan will appear in the tour plans page after saving.</p>
+                                    <p>The guide will review the booking request once the plan is saved or updated.</p>
+                                    <p>Use the member counters to keep your trip group balanced and easy to manage.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 rounded-[2rem] bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 p-6 text-white shadow-xl shadow-blue-200/50">
+                            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                                <div>
+                                    <p class="text-lg font-black">Your custom tour is ready!</p>
+                                    <p class="text-sm font-medium text-white/80" th:text="${editingPlan != null ? 'Click update to resend the revised plan to your tour list.' : 'Click save to add this plan to your tour list.'}">Click save to add this plan to your tour list.</p>
+                                </div>
+                                <button type="submit" class="inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-3 text-sm font-black text-blue-700 transition hover:bg-blue-50">
+                                    <i data-lucide="save" class="h-4 w-4"></i>
+                                    <span th:text="${editingPlan != null ? 'Update Tour Plan' : 'Save Tour Plan'}">Save Tour Plan</span>
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                </form>
+
+                <aside class="xl:sticky xl:top-24 xl:self-start">
+                    <div class="planner-card rounded-[2rem] border border-slate-200 bg-white/95 p-6 shadow-sm">
+                        <div class="mb-5">
+                            <h3 class="text-lg font-black text-slate-950">Trip Summary</h3>
+                            <p class="mt-1 text-sm font-medium text-slate-500">A live snapshot of your plan.</p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="rounded-2xl border border-cyan-100 bg-cyan-50 p-4">
+                                <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Destinations</p>
+                                <div id="sidebarDestinations" class="mt-3 space-y-2 text-sm font-semibold text-slate-700">
+                                    <p class="italic text-slate-500">No destinations selected yet.</p>
+                                </div>
+                            </div>
+
+                            <div class="rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
+                                <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Dates</p>
+                                <p id="sidebarTripDates" class="mt-3 text-sm font-semibold text-slate-700">Pick a start date and trip length.</p>
+                            </div>
+
+                            <div class="rounded-2xl border border-amber-100 bg-amber-50 p-4">
+                                <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Members</p>
+                                <p id="sidebarMembers" class="mt-3 text-sm font-semibold text-slate-700">0 travelers</p>
+                            </div>
+
+                            <div class="rounded-2xl border border-blue-100 bg-blue-50 p-4">
+                                <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Guide</p>
+                                <p id="sidebarGuide" class="mt-3 text-sm font-semibold text-slate-700">No guide selected yet.</p>
+                            </div>
+
+                            <div class="rounded-2xl border border-violet-100 bg-violet-50 p-4">
+                                <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Guide Note</p>
+                                <p id="sidebarNote" class="mt-3 text-sm font-semibold text-slate-700">Add a note for your selected guide.</p>
+                            </div>
+
+                            <div class="rounded-2xl border border-indigo-200 bg-indigo-50 p-4">
+                                <p class="text-xs font-black uppercase tracking-[0.24em] text-blue-500">Estimated Total</p>
+                                <p id="sidebarCost" class="mt-3 text-2xl font-black text-blue-700">Rs. 0.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <script th:src="@{/js/custom-tour-builder.js}"></script>
+</body>
+</html>

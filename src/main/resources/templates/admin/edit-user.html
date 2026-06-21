@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User | Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { brandBlue: '#0056b3', lightBg: '#f8fafc' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .form-label { display: block; font-size: 0.72rem; font-weight: 900; color: #475569; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+        .form-input { width: 100%; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; font-size: 0.875rem; font-weight: 600; color: #0f172a; background: #fff; transition: border-color 0.15s; outline: none; }
+        .form-input:focus { border-color: #0056b3; box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.08); }
+        .form-input:disabled { background: #f8fafc; color: #94a3b8; cursor: not-allowed; }
+    </style>
+</head>
+<body class="flex h-screen bg-lightBg overflow-hidden text-slate-800">
+
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('users')}"></aside>
+
+    <main class="flex-1 flex flex-col min-w-0 bg-lightBg z-10">
+        <header th:replace="~{fragments/admin-header :: header('Edit User', 'Modify user account details and status')}"></header>
+
+        <div class="flex-1 overflow-y-auto p-6 lg:p-8">
+            <!-- Error flash -->
+            <div th:if="${error}" class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-center gap-3 shadow-sm">
+                <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                <span th:text="${error}" class="text-sm font-bold"></span>
+            </div>
+
+            <!-- Back Breadcrumb -->
+            <div class="flex items-center gap-2 text-sm text-slate-500 font-semibold mb-6">
+                <a href="/admin/users" class="flex items-center gap-1.5 hover:text-brandBlue transition">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> User Management
+                </a>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                <span class="text-slate-800 font-black" th:text="${user.name}">User Name</span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Profile Card -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-6 text-center">
+                        <div class="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white text-3xl font-black"
+                             style="background: linear-gradient(135deg, #3b82f6, #6366f1);"
+                             th:text="${user.name != null ? #strings.substring(user.name, 0, 1).toUpperCase() : 'U'}">U</div>
+                        <h2 class="text-lg font-black text-slate-900" th:text="${user.name}">User Name</h2>
+                        <p class="text-sm text-slate-500 mt-1" th:text="${user.email}">email@example.com</p>
+                        <div class="mt-3 flex justify-center">
+                            <span th:if="${user.role.name() == 'TOURIST'}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-xs font-black">
+                                <i data-lucide="user" class="w-3.5 h-3.5"></i> Tourist
+                            </span>
+                            <span th:if="${user.role.name() == 'GUIDE'}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-xs font-black">
+                                <i data-lucide="contact" class="w-3.5 h-3.5"></i> Tour Guide
+                            </span>
+                            <span th:if="${user.role.name() == 'ADMIN'}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800 text-white text-xs font-black">
+                                <i data-lucide="shield" class="w-3.5 h-3.5"></i> Admin
+                            </span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-slate-100">
+                            <p class="text-xs text-slate-500 font-semibold">User ID</p>
+                            <p class="text-sm font-black text-slate-800" th:text="${'#' + user.id}">#1</p>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-5 mt-4 space-y-3">
+                        <h3 class="text-xs font-black text-slate-700 uppercase tracking-wider">Quick Actions</h3>
+                        <a th:href="@{/admin/users/{id}(id=${user.id})}" class="flex items-center gap-2 text-sm font-bold text-brandBlue hover:bg-blue-50 px-3 py-2 rounded-lg transition">
+                            <i data-lucide="eye" class="w-4 h-4"></i> View Full Details
+                        </a>
+                        <form th:if="${!user.blocked}" th:action="@{/admin/users/{id}/block(id=${user.id})}" method="post">
+                            <button type="submit" class="w-full flex items-center gap-2 text-sm font-bold text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg transition text-left">
+                                <i data-lucide="ban" class="w-4 h-4"></i> Block This User
+                            </button>
+                        </form>
+                        <form th:if="${user.blocked}" th:action="@{/admin/users/{id}/unblock(id=${user.id})}" method="post">
+                            <button type="submit" class="w-full flex items-center gap-2 text-sm font-bold text-emerald-600 hover:bg-emerald-50 px-3 py-2 rounded-lg transition text-left">
+                                <i data-lucide="unlock" class="w-4 h-4"></i> Unblock This User
+                            </button>
+                        </form>
+                        <a th:href="@{/admin/users/{id}/delete(id=${user.id})}"
+                           onclick="return confirm('Are you sure you want to permanently delete this user?')"
+                           class="flex items-center gap-2 text-sm font-bold text-red-700 hover:bg-red-50 px-3 py-2 rounded-lg transition">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i> Delete User
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Edit Form -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm">
+                        <div class="p-5 border-b border-slate-200">
+                            <h2 class="text-base font-black text-slate-900">Edit User Details</h2>
+                            <p class="text-xs text-slate-500 font-semibold mt-0.5">Changes will apply immediately after saving</p>
+                        </div>
+                        <form th:action="@{/admin/users/{id}/edit(id=${user.id})}" method="post" class="p-6 space-y-5">
+                            <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="form-label">Full Name <span class="text-rose-500">*</span></label>
+                                    <input type="text" name="name" th:value="${user.name}" required class="form-input">
+                                </div>
+                                <div>
+                                    <label class="form-label">Email Address <span class="text-rose-500">*</span></label>
+                                    <input type="email" name="email" th:value="${user.email}" required class="form-input">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="form-label">Phone Number</label>
+                                    <input type="text" name="phone" th:value="${user.phone}" class="form-input" placeholder="+94 77 123 4567">
+                                </div>
+                                <div>
+                                    <label class="form-label">Country</label>
+                                    <input type="text" name="country" th:value="${user.country}" class="form-input" placeholder="Sri Lanka">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="form-label">Account Status</label>
+                                    <select name="active" class="form-input">
+                                        <option value="true" th:selected="${user.active != null && user.active}">Active</option>
+                                        <option value="false" th:selected="${user.active == null || !user.active}">Deactive</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="form-label">Blocked</label>
+                                    <select name="blocked" class="form-input">
+                                        <option value="false" th:selected="${user.blocked == null || !user.blocked}">Not Blocked</option>
+                                        <option value="true" th:selected="${user.blocked != null && user.blocked}">Blocked</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="pt-4 border-t border-slate-100 flex items-center gap-3">
+                                <button type="submit" class="bg-brandBlue hover:bg-blue-700 text-white font-black py-2.5 px-6 rounded-lg flex items-center gap-2 text-sm shadow-sm transition">
+                                    <i data-lucide="save" class="w-4 h-4"></i> Save Changes
+                                </button>
+                                <a th:href="@{/admin/users/{id}(id=${user.id})}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-5 rounded-lg text-sm transition">
+                                    Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer th:replace="~{fragments/admin-footer :: footer}"></footer>
+    </main>
+
+    <script>lucide.createIcons();</script>
+</body>
+</html>

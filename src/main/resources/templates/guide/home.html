@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tour Guide Home | Sri Lanka Tours</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f0f8ff; }
+        .hero-bg {
+            background-image: linear-gradient(rgba(10, 35, 66, 0.5), rgba(10, 35, 66, 0.25)), url('/images/sri_lanka_collage.png');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen text-slate-800 antialiased">
+
+    <!-- Shared Top Navbar Fragment -->
+    <header th:replace="~{fragments/header :: header('home')}"></header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        
+        <div th:if="${error}" class="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm font-bold flex items-center gap-2 shadow-sm">
+            <i data-lucide="alert-circle" class="w-5 h-5 text-rose-600"></i>
+            <span th:text="${error}">Please check your profile details and try again.</span>
+        </div>
+
+        <div th:if="${param.error != null}" class="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm font-bold flex items-center gap-2 shadow-sm">
+            <i data-lucide="alert-circle" class="w-5 h-5 text-rose-600"></i>
+            <span th:if="${param.error[0] == 'photoUploadFailed'}">We could not upload your profile photo right now.</span>
+            <span th:if="${param.error[0] == 'profileUpdateFailed'}">We could not update your profile right now.</span>
+        </div>
+
+        <!-- Profile Update Success Alert -->
+        <div th:if="${param.success != null and param.success[0] == 'profileUpdated'}" class="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-bold flex items-center gap-2 shadow-sm">
+            <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600"></i>
+            <span>Your profile details have been updated successfully!</span>
+        </div>
+
+        <!-- Guide Welcome Hero Section -->
+        <section class="rounded-[2rem] overflow-hidden mb-8 shadow-2xl hero-bg border border-white/20">
+            <div class="bg-slate-950/20 backdrop-blur-[1px]">
+                <div class="px-8 py-14 md:py-20 relative z-10">
+                    <div class="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur px-4 py-2 text-xs font-black uppercase tracking-[0.28em] text-white/90 mb-5">
+                        <i data-lucide="compass" class="w-4 h-4"></i>
+                        Tour Guide Portal
+                    </div>
+                    <h2 class="text-3xl md:text-5xl font-black text-white mb-3 drop-shadow-md">Welcome Back, <span th:text="${guide.name}">Guide Name</span>!</h2>
+                    <p class="text-blue-100 font-medium max-w-2xl text-base md:text-lg leading-relaxed drop-shadow-sm">
+                        Manage your assigned custom tours, send quotes, or view upcoming client bookings. Your dashboard keeps all your client requests organized.
+                    </p>
+                    <div class="mt-6 flex flex-wrap items-center gap-3 text-sm font-semibold text-white/90">
+                        <span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur">
+                            <i data-lucide="mail" class="w-4 h-4"></i>
+                            <span th:text="${guide.email}">guide@example.com</span>
+                        </span>
+                        <a th:href="@{/tourist/tour-plans/build}" class="inline-flex items-center gap-2 rounded-full bg-white text-slate-900 px-4 py-2 font-black hover:bg-blue-50 transition-colors">
+                            <i data-lucide="sparkles" class="w-4 h-4 text-blue-600"></i>
+                            Create Tour Plan
+                        </a>
+                        <span th:if="${guide.phone != null and !guide.phone.isEmpty()}" class="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur">
+                            <i data-lucide="phone" class="w-4 h-4"></i>
+                            <span th:text="${guide.phone}">+94 77 123 4567</span>
+                        </span>
+                        <span th:if="${guide.nic != null}" class="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur">
+                            <i data-lucide="credit-card" class="w-4 h-4"></i>
+                            <span th:text="${'NIC: ' + guide.nic}">NIC</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stat Cards Section -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <a href="/home/tourguide/{id}/tours" th:href="@{|/home/tourguide/${guide.id}/tours|}" class="relative bg-white p-6 rounded-2xl border border-slate-200 hover:border-blue-300 hover:shadow-md transition group min-h-[180px] flex flex-col justify-between">
+                <span class="absolute top-4 right-4 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white ring-2 ring-white" th:text="${pendingCount}">0</span>
+                <div class="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                    <i data-lucide="clipboard-list" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900">Pending Requests</h3>
+                <p class="text-sm text-slate-500 mt-1">Review quotation requests.</p>
+            </a>
+
+            <a href="/home/tourguide/{id}/tours" th:href="@{|/home/tourguide/${guide.id}/tours|}" class="relative bg-white p-6 rounded-2xl border border-slate-200 hover:border-blue-300 hover:shadow-md transition group min-h-[180px] flex flex-col justify-between">
+                <span class="absolute top-4 right-4 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-xs font-bold text-white ring-2 ring-white" th:text="${acceptedCount}">0</span>
+                <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                    <i data-lucide="calendar-check" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900">Upcoming Tours</h3>
+                <p class="text-sm text-slate-500 mt-1">Your confirmed guide bookings.</p>
+            </a>
+
+            <div class="relative bg-gradient-to-br from-blue-600 to-indigo-600 p-6 rounded-2xl shadow-lg shadow-blue-200/50 hover:shadow-xl transition group text-white overflow-hidden min-h-[180px] flex flex-col justify-between">
+                <div class="absolute top-4 right-4 flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-[10px] font-bold text-white ring-2 ring-white/10">Rate</div>
+                <div class="w-12 h-12 rounded-full bg-white/15 text-white flex items-center justify-center mb-4 group-hover:scale-110 transition backdrop-blur">
+                    <i data-lucide="sliders-horizontal" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-lg font-bold">Day Cost</h3>
+                <p class="text-sm text-white/80 mt-1" th:text="${'Rs. ' + #numbers.formatDecimal(guide.estimatedDayRate, 1, 'DEFAULT', 2, 'DEFAULT')}">Rs. 0.00</p>
+            </div>
+        </section>
+
+        <!-- Tours Section (Simplified list of only their tours) -->
+        <section id="assigned-tours" class="space-y-6 mb-12">
+            <div class="flex justify-between items-end border-b border-blue-200 pb-4 mb-6">
+                <div>
+                    <h3 class="text-2xl font-black text-slate-900">My Assigned Tours</h3>
+                    <p class="text-sm text-slate-500">Overview of plans and custom guide bookings assigned to you</p>
+                </div>
+                <a th:href="@{|/home/tourguide/${guide.id}/tours|}" class="text-sm font-bold text-blue-600 hover:underline flex items-center gap-1">View Tour Details <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+            </div>
+
+            <div th:if="${tourPlans != null and !#lists.isEmpty(tourPlans)}" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div th:each="plan : ${tourPlans}" th:with="planDays=${plan.startDate != null and plan.endDate != null ? T(java.time.temporal.ChronoUnit).DAYS.between(plan.startDate, plan.endDate) + 1 : 1}" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-black uppercase tracking-[0.28em] text-slate-400 mb-2">
+                            <span>Plan</span>
+                            <span th:text="${'#' + plan.id}">#1</span>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 mb-1" th:text="${plan.startDate != null ? plan.tourist.name + ' - Custom Tour Plan' : plan.tourist.name + ' - Guide Booking'}">Custom Tour Plan</h4>
+                        <p class="text-sm text-slate-500 font-medium mb-4" th:text="${plan.startDate != null and plan.endDate != null ? #temporals.format(plan.startDate, 'dd MMM yyyy') + ' - ' + #temporals.format(plan.endDate, 'dd MMM yyyy') : 'Dates to be finalized'}">12 Jun 2026 - 18 Jun 2026</p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <span th:if="${plan.startDate != null}" class="inline-flex items-center gap-2 rounded-full bg-blue-50 text-blue-700 px-3 py-1.5 text-xs font-black uppercase tracking-wider">
+                            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                            <span th:text="${planDays}">5</span> Days
+                        </span>
+                        <span th:if="${plan.startDate == null}" class="inline-flex items-center gap-2 rounded-full bg-amber-50 text-amber-700 px-3 py-1.5 text-xs font-black uppercase tracking-wider">
+                            <i data-lucide="calendar-off" class="w-3.5 h-3.5"></i>
+                            Flexible Dates
+                        </span>
+                        <span class="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-black uppercase tracking-wider"
+                              th:classappend="${plan.status.name() == 'ACCEPTED' ? 'bg-emerald-100 text-emerald-800' : (plan.status.name() == 'REJECTED' || plan.status.name() == 'CANCELLED' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800')}"
+                              th:text="${plan.status.name() == 'CANCELLED' ? 'CANCELLED BY TOURIST' : plan.status}">PENDING_QUOTATION</span>
+                    </div>
+
+                    <div th:if="${(plan.touristNote != null and !#strings.isEmpty(plan.touristNote)) or (plan.guideNotification != null and !#strings.isEmpty(plan.guideNotification))}" class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <div class="flex items-center justify-between gap-3 mb-2">
+                            <p class="text-[10px] font-black uppercase tracking-[0.24em] text-slate-400">Guide Update</p>
+                            <span class="text-[10px] font-bold text-slate-500" th:text="${plan.updatedAt != null ? #temporals.format(plan.updatedAt, 'dd MMM yyyy') : 'Recently updated'}">Recently updated</span>
+                        </div>
+                        <p th:if="${plan.touristNote != null and !#strings.isEmpty(plan.touristNote)}" class="text-sm text-slate-700 leading-relaxed" th:text="${plan.touristNote}">Booked guide note.</p>
+                        <p th:if="${plan.guideNotification != null and !#strings.isEmpty(plan.guideNotification)}" class="mt-2 text-xs font-semibold text-blue-700" th:text="${plan.guideNotification}">Tour plan updated by tourist.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div th:if="${tourPlans == null or #lists.isEmpty(tourPlans)}" class="bg-white rounded-[2rem] border border-slate-200 p-8 text-center max-w-3xl mx-auto shadow-sm">
+                <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="inbox" class="w-8 h-8 text-blue-400"></i>
+                </div>
+                <h4 class="text-lg font-bold text-slate-800 mb-2">No Assigned Tours Yet</h4>
+                <p class="text-sm text-slate-500">Tours and custom guide bookings will appear here once tourists select you as their guide.</p>
+            </div>
+        </section>
+
+        <!-- Top 5 Reviews Section -->
+        <section class="mb-12" th:if="${topReviews != null and !#lists.isEmpty(topReviews)}">
+            <div class="flex justify-between items-end border-b border-blue-200 pb-4 mb-6">
+                <div>
+                    <h3 class="text-2xl font-black text-slate-900">What Travelers Say</h3>
+                    <p class="text-sm text-slate-500">Top-rated reviews from our community</p>
+                </div>
+                <a href="/reviews" class="text-sm font-bold text-blue-600 hover:underline flex items-center gap-1">All Reviews <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div th:each="review : ${topReviews}" class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm shrink-0"
+                             style="background: linear-gradient(135deg, #3b82f6, #6366f1);"
+                             th:text="${review.reviewerName != null ? #strings.substring(review.reviewerName, 0, 1).toUpperCase() : 'A'}">A</div>
+                        <div>
+                            <p class="text-sm font-black text-slate-900" th:text="${review.reviewerName} ?: 'Anonymous'">Name</p>
+                            <div class="flex items-center gap-0.5 mt-0.5">
+                                <svg th:each="i : ${#numbers.sequence(1,5)}"
+                                     th:class="${i <= review.rating ? 'w-3.5 h-3.5 fill-yellow-400 text-yellow-400' : 'w-3.5 h-3.5 fill-slate-200 text-slate-200'}"
+                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed line-clamp-3" th:text="${review.comment}">Review comment</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- My Profile Section -->
+        <section id="profile-details" class="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 md:p-10 mb-12">
+            <div class="border-b border-blue-200 pb-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h3 class="text-2xl font-black text-slate-900">My Profile Details</h3>
+                    <p class="text-sm text-slate-500">Update your public profile, languages spoken, and availability status</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"
+                          th:classappend="${guide.active ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                        <span class="h-2 w-2 rounded-full animate-pulse" th:classappend="${guide.active ? 'bg-emerald-500' : 'bg-rose-500'}"></span>
+                        <span th:text="${guide.active ? 'Active & Accepting Tours' : 'Inactive & Offline'}">Active</span>
+                    </span>
+                    <button type="button" id="editProfileBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl flex items-center gap-1.5 text-xs transition-colors shadow-md shadow-blue-600/10">
+                        <i data-lucide="edit" class="w-3.5 h-3.5"></i> Edit Details
+                    </button>
+                    <button type="button" id="cancelProfileBtn" class="hidden bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 px-4 rounded-xl flex items-center gap-1.5 text-xs transition-colors">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+
+            <form th:action="@{|/home/tourguide/${guide.id}/profile/update|}" method="post" enctype="multipart/form-data" onsubmit="return validateProfileForm()" class="space-y-6">
+                <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Left: Profile Image & Read Only Info -->
+                    <div class="lg:col-span-1 flex flex-col items-center text-center space-y-6 bg-slate-50 rounded-2xl p-6 border border-slate-200">
+                        <div class="relative group">
+                            <img th:src="${guide.profilePhoto} ?: '/images/default-avatar.png'" alt="Profile Avatar" class="w-36 h-36 rounded-full object-cover border-4 border-white shadow-md">
+                        </div>
+                        
+                        <div class="w-full space-y-4">
+                            <div>
+                                <label class="block text-left text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Email Address (Read-only)</label>
+                                <div class="text-left px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-lg text-sm text-slate-600 font-semibold select-none" th:text="${guide.email}">email@example.com</div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-left text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">NIC Number (Read-only)</label>
+                                <div class="text-left px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-lg text-sm text-slate-600 font-semibold select-none" th:text="${guide.nic} ?: 'Not Provided'">NIC</div>
+                            </div>
+
+                            <div>
+                                <label class="block text-left text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Gender (Read-only)</label>
+                                <div class="text-left px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-lg text-sm text-slate-600 font-semibold select-none" th:text="${guide.gender} ?: 'Not Specified'">Gender</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Editable Form Fields -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Full Name <span class="text-rose-500">*</span></label>
+                                <input type="text" name="name" th:value="${guide.name}" required class="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:border-blue-500 focus:ring-3 focus:ring-blue-500/10 focus:outline-none">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Date of Birth</label>
+                                <input type="date" name="dob" th:value="${guide.dob}" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:border-blue-500 focus:ring-3 focus:ring-blue-500/10 focus:outline-none text-slate-600">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Hourly Rate (Rs./hr) <span class="text-rose-500">*</span></label>
+                                <input type="number" step="0.01" name="hourlyRate" th:value="${guide.hourlyRate}" required class="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:border-blue-500 focus:ring-3 focus:ring-blue-500/10 focus:outline-none">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Years of Experience <span class="text-rose-500">*</span></label>
+                                <input type="text" name="experience" th:value="${guide.experience}" required class="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:border-blue-500 focus:ring-3 focus:ring-blue-500/10 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">Upload New Profile Photo</label>
+                            <input type="file" name="profilePhotoFile" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                            <p class="text-[10px] text-slate-400 mt-1">Leave empty to keep your current profile photo.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Languages Spoken <span class="text-rose-500">*</span></label>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
+                                <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" value="English" class="profile-lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                    English
+                                </label>
+                                <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" value="Sinhala" class="profile-lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                    Sinhala (සිංහල)
+                                </label>
+                                <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" value="Tamil" class="profile-lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                    Tamil (தமிழ்)
+                                </label>
+                                <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" value="Chinese" class="profile-lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                    Chinese (Simplified)
+                                </label>
+                                <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" value="German" class="profile-lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                    German (Deutsch)
+                                </label>
+                                <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" value="French" class="profile-lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                    French (Français)
+                                </label>
+                                <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" value="Russian" class="profile-lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                    Russian (Русский)
+                                </label>
+                                <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" value="Japanese" class="profile-lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                    Japanese (日本語)
+                                </label>
+                                <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" value="Korean" class="profile-lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                    Korean (한국어)
+                                </label>
+                                <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" value="Hindi" class="profile-lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                    Hindi (हिन्दी)
+                                </label>
+                                <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" value="Arabic" class="profile-lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                    Arabic (العربية)
+                                </label>
+                                <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" value="Spanish" class="profile-lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                    Spanish (Español)
+                                </label>
+                                <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" value="Italian" class="profile-lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                    Italian (Italiano)
+                                </label>
+                                <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" value="Dutch" class="profile-lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                    Dutch (Nederlands)
+                                </label>
+                                <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                                    <input type="checkbox" value="Portuguese" class="profile-lang-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-600">
+                                    Portuguese (Português)
+                                </label>
+                            </div>
+                            <!-- Hidden input to store comma-separated list of selected languages -->
+                            <input type="hidden" name="languages" id="profileLanguagesInput" th:value="${guide.languages}">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">Short Bio / Description <span class="text-rose-500">*</span></label>
+                            <textarea name="description" th:text="${guide.description}" rows="4" required placeholder="Tell travelers about yourself, your guiding style, and favorite locations..." class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:border-blue-500 focus:ring-3 focus:ring-blue-500/10 focus:outline-none"></textarea>
+                        </div>
+
+                        <div id="saveChangesBtnContainer" class="hidden pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <!-- Accepting tours toggle -->
+                            <div class="flex items-center gap-3">
+                                <label class="relative inline-flex items-center cursor-pointer select-none">
+                                    <input type="checkbox" name="active" value="true" th:checked="${guide.active}" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600 animate-pulse-slow"></div>
+                                    <span class="ml-3 text-sm font-bold text-slate-700">Accepting New Tours / Requests</span>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl transition-colors shadow-md shadow-blue-600/20">
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <!-- Shared Footer Fragment -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Profile Languages Checklist Handling
+        function initLanguages() {
+            const val = document.getElementById('profileLanguagesInput').value;
+            if (val) {
+                const langs = val.split(',').map(s => s.trim());
+                document.querySelectorAll('.profile-lang-checkbox').forEach(cb => {
+                    if (langs.includes(cb.value)) {
+                        cb.checked = true;
+                    }
+                });
+            }
+        }
+        
+        function updateProfileLanguages() {
+            const checkedLangs = [];
+            document.querySelectorAll('.profile-lang-checkbox:checked').forEach(cb => {
+                checkedLangs.push(cb.value);
+            });
+            document.getElementById('profileLanguagesInput').value = checkedLangs.join(', ');
+        }
+
+        document.querySelectorAll('.profile-lang-checkbox').forEach(cb => {
+            cb.addEventListener('change', updateProfileLanguages);
+        });
+
+        // Initialize languages checklist on load
+        initLanguages();
+
+        // Edit Profile Locking/Unlocking Toggle Logic
+        const editBtn = document.getElementById('editProfileBtn');
+        const cancelBtn = document.getElementById('cancelProfileBtn');
+        const saveContainer = document.getElementById('saveChangesBtnContainer');
+        const formFields = document.querySelectorAll('#profile-details form input, #profile-details form textarea');
+
+        function setFormEditable(editable) {
+            formFields.forEach(field => {
+                // Email, Gender, NIC are read-only and should never be unlocked
+                if (field.name !== 'email' && field.name !== 'nic' && field.name !== 'gender') {
+                    if (editable) {
+                        field.removeAttribute('disabled');
+                    } else {
+                        field.setAttribute('disabled', 'true');
+                    }
+                }
+            });
+
+            if (editable) {
+                editBtn.classList.add('hidden');
+                cancelBtn.classList.remove('hidden');
+                saveContainer.classList.remove('hidden');
+            } else {
+                editBtn.classList.remove('hidden');
+                cancelBtn.classList.add('hidden');
+                saveContainer.classList.add('hidden');
+            }
+        }
+
+        // Initialize form in disabled (locked) state on load
+        formFields.forEach(field => {
+            field.setAttribute('disabled', 'true');
+        });
+
+        editBtn.addEventListener('click', () => setFormEditable(true));
+        cancelBtn.addEventListener('click', () => {
+            setFormEditable(false);
+            window.location.reload();
+        });
+
+        // Validate Profile Form before submitting
+        function validateProfileForm() {
+            const languages = document.getElementById('profileLanguagesInput').value;
+            if (!languages || languages.trim() === '') {
+                alert("Please select at least one language spoken.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>

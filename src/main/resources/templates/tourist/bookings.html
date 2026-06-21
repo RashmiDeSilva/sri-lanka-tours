@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookings | Sri Lanka Tours</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .ocean-bg { background: linear-gradient(135deg, #f0f9ff 0%, #e8f4fd 50%, #f0f9ff 100%); min-height: 100vh; }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col ocean-bg">
+
+    <!-- Top Navigation Header -->
+    <header th:replace="~{fragments/header :: header('bookings')}"></header>
+
+    <!-- Page Header -->
+    <div class="relative w-full bg-[#f0f8ff] pt-12 pb-8 border-b border-blue-100">
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div class="flex items-center gap-2 text-sm font-semibold text-slate-500 mb-4">
+                <a href="/" class="hover:text-blue-600 transition-colors">Home</a>
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                <span class="text-blue-600">Bookings</span>
+            </div>
+
+            <div class="inline-flex items-center gap-2 rounded-full bg-blue-50 border border-blue-100 px-4 py-1.5 text-xs font-black uppercase tracking-[0.25em] text-blue-700 mb-3">
+                <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                Guide Bookings
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-2">My Bookings</h1>
+            <p class="text-slate-600 font-medium max-w-2xl text-sm md:text-base leading-relaxed">
+                Track your active guide booking requests. Once a guide accepts, you can finalize trip details and custom pricing.
+            </p>
+        </div>
+    </div>
+
+    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <main class="flex-1 p-8 max-w-7xl mx-auto w-full space-y-8">
+            <div class="bg-blue-50 border border-blue-100 rounded-2xl p-5 flex gap-3 text-blue-900 max-w-3xl">
+                <i data-lucide="info" class="w-5 h-5 shrink-0 mt-0.5 text-blue-600"></i>
+                <p class="text-sm font-semibold leading-relaxed">
+                    A booking request informs your selected guide that you want to plan a tour. After the request is accepted, you can click "Build Tour Plan" to customize your itinerary. You can also cancel a booking here and the guide will still see that update.
+                </p>
+            </div>
+
+            <!-- Bookings List -->
+            <section th:if="${bookings != null and !#lists.isEmpty(bookings)}" class="space-y-6">
+                <article th:each="booking : ${bookings}" class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-7">
+                    <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                        <div class="flex items-start gap-4">
+                            <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 border border-purple-100 shadow-sm">
+                                <i data-lucide="contact" class="w-7 h-7"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 text-xs font-black uppercase tracking-[0.28em] text-slate-400 mb-1.5">
+                                    <span>Booking</span>
+                                    <span th:text="${'#' + booking.id}">#1</span>
+                                </div>
+                                <h2 class="text-2xl font-black text-slate-900 mb-2" th:text="${booking.guide.name}">Guide Name</h2>
+                                <div class="flex flex-wrap items-center gap-y-2 gap-x-4 text-sm font-semibold text-slate-500">
+                                    <span class="flex items-center gap-1.5">
+                                        <i data-lucide="mail" class="w-4 h-4"></i>
+                                        <span th:text="${booking.guide.email}">guide@example.com</span>
+                                    </span>
+                                    <span class="flex items-center gap-1.5" th:if="${booking.guide.phone != null and !booking.guide.phone.isEmpty()}">
+                                        <i data-lucide="phone" class="w-4 h-4"></i>
+                                        <span th:text="${booking.guide.phone}">+94 77 123 4567</span>
+                                    </span>
+                                    <span class="flex items-center gap-1.5" th:if="${booking.guide.languages != null and !booking.guide.languages.isEmpty()}">
+                                        <i data-lucide="languages" class="w-4 h-4"></i>
+                                        <span th:text="${booking.guide.languages}">English</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div th:if="${booking.touristNote != null and !#strings.isEmpty(booking.touristNote)}" class="rounded-2xl border border-slate-200 bg-slate-50 p-4 max-w-2xl">
+                            <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400 mb-2">Note For Guide</p>
+                            <p class="text-sm font-semibold text-slate-700 leading-relaxed" th:text="${booking.touristNote}">Booked guide note.</p>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-3 self-start lg:self-center">
+                            <!-- Status Badges -->
+                            <span th:if="${booking.status.name() == 'PENDING_QUOTATION'}" class="inline-flex items-center gap-1.5 rounded-full bg-yellow-50 text-yellow-800 px-4 py-2 text-xs font-black uppercase tracking-wider border border-yellow-200">
+                                <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+                                Pending Approval
+                            </span>
+                            <span th:if="${booking.status.name() == 'ACCEPTED'}" class="inline-flex items-center gap-1.5 rounded-full bg-green-50 text-green-800 px-4 py-2 text-xs font-black uppercase tracking-wider border border-green-200">
+                                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                Accepted
+                            </span>
+                            <span th:if="${booking.status.name() == 'REJECTED'}" class="inline-flex items-center gap-1.5 rounded-full bg-red-50 text-red-800 px-4 py-2 text-xs font-black uppercase tracking-wider border border-red-200">
+                                <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                                Rejected
+                            </span>
+                            <span th:if="${booking.status.name() == 'COMPLETED'}" class="inline-flex items-center gap-1.5 rounded-full bg-blue-50 text-blue-800 px-4 py-2 text-xs font-black uppercase tracking-wider border border-blue-200">
+                                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                Completed
+                            </span>
+
+                            <!-- Actions -->
+                            <a th:if="${booking.status.name() == 'ACCEPTED' or booking.status.name() == 'PENDING_QUOTATION'}"
+                               th:href="@{/tourist/tour-plans/build(guideId=${booking.guide.id}, bookingId=${booking.id})}"
+                               class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded-xl transition-colors shadow-md shadow-blue-500/20 text-sm">
+                                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                                Build Tour Plan
+                            </a>
+                            <form th:if="${booking.status.name() != 'COMPLETED'}"
+                                  th:action="@{/tourist/bookings/{id}/delete(id=${booking.id})}"
+                                  method="post"
+                                  class="m-0">
+                                <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button type="submit"
+                                        onclick="return confirm('Cancel this booking request? The guide will still see the cancellation update.')"
+                                        class="inline-flex items-center gap-2 border border-rose-200 bg-white hover:bg-rose-50 text-rose-700 font-bold px-5 py-2.5 rounded-xl transition-colors text-sm">
+                                    <i data-lucide="x-circle" class="w-4 h-4"></i>
+                                    Cancel Booking
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <section th:if="${bookings == null or #lists.isEmpty(bookings)}" class="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 md:p-10 text-center max-w-2xl mx-auto mt-12">
+                <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="calendar-x" class="w-8 h-8 text-blue-400"></i>
+                </div>
+                <h4 class="text-lg font-bold text-slate-800 mb-2">No Active Bookings</h4>
+                <p class="text-sm text-slate-500 mb-6">You haven't booked any tour guides yet. Explore guides to find and book local experts.</p>
+                <a th:href="@{/tourist/guides}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2.5 rounded-xl transition-colors shadow-md shadow-blue-500/20">
+                    <i data-lucide="search" class="w-4 h-4"></i> Browse Tour Guides
+                </a>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

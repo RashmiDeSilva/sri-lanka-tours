@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details | Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandBlue: '#0056b3',
+                        lightBg: '#f8fafc'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .info-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 22px;
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
+        }
+        .info-label {
+            font-size: 0.72rem;
+            font-weight: 900;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 4px;
+        }
+        .info-value {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #0f172a;
+            overflow-wrap: anywhere;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 900;
+        }
+        .badge-active { background: #dcfce7; color: #166534; }
+        .badge-deactive { background: #e2e8f0; color: #475569; }
+        .badge-pending { background: #fef3c7; color: #92400e; }
+        .badge-blocked { background: #fee2e2; color: #b91c1c; }
+        .badge-tourist { background: #e0f2fe; color: #0284c7; }
+        .badge-admin { background: #1e3a8a; color: #ffffff; }
+        .badge-guide { background: #ede9fe; color: #6d28d9; }
+    </style>
+</head>
+<body class="flex min-h-screen bg-lightBg text-slate-800">
+
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('users')}"></aside>
+
+    <main class="flex-1 flex flex-col min-w-0">
+        <header th:replace="~{fragments/admin-header :: header('User Management', 'Full account information and access controls')}"></header>
+
+        <div class="flex-1 overflow-y-auto p-6 lg:p-8">
+            <div th:if="${success}" class="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg flex items-center gap-3 shadow-sm">
+                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                <span th:text="${success}" class="text-sm font-bold"></span>
+            </div>
+            <div th:if="${error}" class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-center gap-3 shadow-sm">
+                <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                <span th:text="${error}" class="text-sm font-bold"></span>
+            </div>
+
+            <section class="bg-white rounded-lg border border-slate-200 p-6 mb-6 shadow-sm">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-lg bg-brandBlue text-white flex items-center justify-center font-black text-2xl" th:text="${#strings.substring(user.name, 0, 1).toUpperCase()}">U</div>
+                        <div>
+                            <h2 class="text-2xl font-black text-slate-950" th:text="${user.name}">User Name</h2>
+                            <p class="text-sm font-semibold text-slate-500" th:text="${user.email}">user@example.com</p>
+                            <div class="flex flex-wrap gap-2 mt-3">
+                                <span th:if="${user.role.name() == 'TOURIST'}" class="badge badge-tourist">Tourist</span>
+                                <span th:if="${user.role.name() == 'GUIDE'}" class="badge badge-guide">Tour Guide</span>
+                                <span th:if="${user.role.name() == 'ADMIN'}" class="badge badge-admin">Admin</span>
+                                <span th:if="${user.blocked != null && user.blocked}" class="badge badge-blocked">
+                                    <i data-lucide="ban" class="w-3.5 h-3.5"></i> Blocked
+                                </span>
+                                <span th:if="${(user.blocked == null || !user.blocked) && user.active != null && !user.active}" class="badge badge-deactive">
+                                    <i data-lucide="user-minus" class="w-3.5 h-3.5"></i> Deactive
+                                </span>
+                                <span th:if="${(user.blocked == null || !user.blocked) && user.role.name() == 'GUIDE' && user.approvalStatus != null && user.approvalStatus.name() == 'REJECTED'}" class="badge badge-blocked">
+                                    <i data-lucide="x-circle" class="w-3.5 h-3.5"></i> Rejected
+                                </span>
+                                <span th:if="${(user.blocked == null || !user.blocked) && (user.active == null || user.active) && user.role.name() == 'GUIDE' && user.approvalStatus != null && user.approvalStatus.name() == 'PENDING'}" class="badge badge-pending">
+                                    <i data-lucide="clock" class="w-3.5 h-3.5"></i> Pending Approval
+                                </span>
+                                <span th:if="${(user.blocked == null || !user.blocked) && (user.active == null || user.active) && (user.role.name() != 'GUIDE' || (user.approvalStatus != null && user.approvalStatus.name() == 'APPROVED'))}" class="badge badge-active">
+                                    <i data-lucide="check" class="w-3.5 h-3.5"></i> Active
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        <!-- Pending Approval Actions -->
+                        <span th:if="${user.role.name() == 'GUIDE' && user.approvalStatus != null && user.approvalStatus.name() == 'PENDING'}" class="flex gap-2">
+                            <form th:action="@{/admin/users/{id}/approve-guide(id=${user.id})}" method="post">
+                                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-lg flex items-center gap-2 text-sm shadow-sm">
+                                    <i data-lucide="check" class="w-4 h-4"></i> Approve
+                                </button>
+                            </form>
+                            <form th:action="@{/admin/users/{id}/reject-guide(id=${user.id})}" method="post">
+                                <button type="submit" class="bg-red-650 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg flex items-center gap-2 text-sm shadow-sm">
+                                    <i data-lucide="x" class="w-4 h-4"></i> Reject
+                                </button>
+                            </form>
+                        </span>
+                        
+                        <!-- Rejected Guide Action -->
+                        <form th:if="${user.role.name() == 'GUIDE' && user.approvalStatus != null && user.approvalStatus.name() == 'REJECTED'}" th:action="@{/admin/users/{id}/approve-guide(id=${user.id})}" method="post">
+                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-lg flex items-center gap-2 text-sm shadow-sm">
+                                <i data-lucide="check" class="w-4 h-4"></i> Approve Guide
+                            </button>
+                        </form>
+
+                        <form th:if="${user.active == null || user.active}" th:action="@{/admin/users/{id}/deactivate(id=${user.id})}" method="post">
+                            <button type="submit" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
+                                <i data-lucide="user-minus" class="w-4 h-4"></i> Deactivate
+                            </button>
+                        </form>
+                        <form th:if="${user.active != null && !user.active}" th:action="@{/admin/users/{id}/activate(id=${user.id})}" method="post">
+                            <button type="submit" class="bg-blue-50 hover:bg-blue-100 text-brandBlue font-bold px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
+                                <i data-lucide="user-check" class="w-4 h-4"></i> Activate
+                            </button>
+                        </form>
+                        <form th:if="${user.blocked == null || !user.blocked}" th:action="@{/admin/users/{id}/block(id=${user.id})}" method="post">
+                            <button type="submit" class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-bold px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
+                                <i data-lucide="ban" class="w-4 h-4"></i> Block
+                            </button>
+                        </form>
+                        <form th:if="${user.blocked != null && user.blocked}" th:action="@{/admin/users/{id}/unblock(id=${user.id})}" method="post">
+                            <button type="submit" class="bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 font-bold px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
+                                <i data-lucide="unlock" class="w-4 h-4"></i> Unblock
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <section class="info-card">
+                    <div class="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100">
+                        <div class="w-10 h-10 rounded-lg bg-blue-50 text-brandBlue flex items-center justify-center">
+                            <i data-lucide="user" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="text-lg font-black text-slate-900">Basic Details</h3>
+                    </div>
+                    <div class="space-y-5">
+                        <div>
+                            <div class="info-label">User ID</div>
+                            <div class="info-value" th:text="${user.id}">1</div>
+                        </div>
+                        <div>
+                            <div class="info-label">Full Name</div>
+                            <div class="info-value" th:text="${user.name}">User Name</div>
+                        </div>
+                        <div>
+                            <div class="info-label">Email Address</div>
+                            <div class="info-value">
+                                <a th:href="${'mailto:' + user.email}" th:text="${user.email}" class="text-brandBlue hover:underline">user@example.com</a>
+                            </div>
+                        </div>
+                        <div th:if="${user.phone != null && !#strings.isEmpty(user.phone)}">
+                            <div class="info-label">Phone Number</div>
+                            <div class="info-value" th:text="${user.phone}">+123456789</div>
+                        </div>
+                        <div th:if="${user.country != null && !#strings.isEmpty(user.country)}">
+                            <div class="info-label">Country</div>
+                            <div class="info-value" th:text="${user.country}">Sri Lanka</div>
+                        </div>
+                        <div th:if="${user.nic != null && !#strings.isEmpty(user.nic)}">
+                            <div class="info-label">NIC Number</div>
+                            <div class="info-value" th:text="${user.nic}">NIC</div>
+                        </div>
+                        <div th:if="${user.dob != null}">
+                            <div class="info-label">Age</div>
+                            <div class="info-value" th:text="${user.getAge() != null ? user.getAge() + ' Years' : 'N/A'}">30 Years</div>
+                        </div>
+                        <div th:if="${user.gender != null && !#strings.isEmpty(user.gender)}">
+                            <div class="info-label">Gender</div>
+                            <div class="info-value" th:text="${user.gender}">Male</div>
+                        </div>
+                        <div>
+                            <div class="info-label">Role</div>
+                            <div class="info-value" th:text="${user.role.name()}">TOURIST</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="info-card">
+                    <div class="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100">
+                        <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                            <i data-lucide="shield" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="text-lg font-black text-slate-900">Account Access</h3>
+                    </div>
+                    <div class="space-y-5">
+                        <div>
+                            <div class="info-label">Active Account</div>
+                            <div class="info-value" th:text="${user.active == null || user.active ? 'Yes' : 'No'}">Yes</div>
+                        </div>
+                        <div>
+                            <div class="info-label">Blocked From Login</div>
+                            <div class="info-value" th:text="${user.blocked != null && user.blocked ? 'Yes' : 'No'}">No</div>
+                        </div>
+                        <div>
+                            <div class="info-label">Guide Approved</div>
+                            <div class="info-value" th:text="${user.role.name() == 'GUIDE' ? (user.approved == null || user.approved ? 'Yes' : 'No') : 'Not required'}">Not required</div>
+                        </div>
+                        <div>
+                            <div class="info-label">Login Allowed</div>
+                            <div class="info-value" th:text="${(user.active == null || user.active) && (user.blocked == null || !user.blocked) && (user.role.name() != 'GUIDE' || user.approved == null || user.approved) ? 'Yes' : 'No'}">Yes</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="info-card">
+                    <div class="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100">
+                        <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+                            <i data-lucide="contact" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="text-lg font-black text-slate-900">Guide Details</h3>
+                    </div>
+                    <div class="space-y-5" th:if="${user.role.name() == 'GUIDE'}">
+                        <!-- Profile Photo Preview -->
+                        <div th:if="${user.profilePhoto != null && !#strings.isEmpty(user.profilePhoto)}" class="mb-4">
+                            <div class="info-label">Profile Photo</div>
+                            <div class="mt-1 w-24 h-24 rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-slate-100 flex items-center justify-center">
+                                <img th:src="${user.profilePhoto}" alt="Guide Photo" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="info-label">Years of Experience</div>
+                            <div class="info-value" th:text="${user.experience != null && !#strings.isEmpty(user.experience) ? user.experience : 'Not added'}">Not added</div>
+                        </div>
+                        <div>
+                            <div class="info-label">Languages Spoken</div>
+                            <div class="info-value" th:text="${user.languages != null && !#strings.isEmpty(user.languages) ? user.languages : 'Not added'}">Not added</div>
+                        </div>
+                        
+                        <!-- Certification Link -->
+                        <div th:if="${user.certifications != null && !#strings.isEmpty(user.certifications)}">
+                            <div class="info-label">Certifications / Licenses</div>
+                            <div class="mt-1">
+                                <a th:href="${user.certifications}" target="_blank" class="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 font-bold px-3 py-1.5 rounded-lg text-xs border border-blue-200 transition">
+                                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i> View Certification
+                                </a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="info-label">Description / Bio</div>
+                            <div class="info-value font-normal text-slate-600 bg-slate-50 border border-slate-100 rounded-lg p-3 mt-1 whitespace-pre-line" th:text="${user.description != null && !#strings.isEmpty(user.description) ? user.description : 'No bio added'}">No bio added</div>
+                        </div>
+                        <div>
+                            <div class="info-label">Average Rating</div>
+                            <div class="info-value" th:text="${user.averageRating != null ? user.averageRating : '0.0'}">0.0</div>
+                        </div>
+                        <div>
+                            <div class="info-label">Total Reviews</div>
+                            <div class="info-value" th:text="${user.totalReviews != null ? user.totalReviews : 0}">0</div>
+                        </div>
+                    </div>
+                    <div th:unless="${user.role.name() == 'GUIDE'}" class="rounded-lg bg-slate-50 border border-slate-100 p-4 text-sm font-semibold text-slate-500">
+                        This user is not a tour guide, so no guide-specific details are available.
+                    </div>
+                </section>
+            </div>
+        </div>
+        <footer th:replace="~{fragments/admin-footer :: footer}"></footer>
+    </main>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

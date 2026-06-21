@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Sri Lanka Tours</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .contact-hero {
+            background-image: linear-gradient(rgba(10, 25, 47, 0.62), rgba(10, 25, 47, 0.42)), url('/images/sri_lanka_collage.png');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#f0f8ff] text-slate-800" style="font-family:'Inter',sans-serif;">
+    <header th:replace="~{fragments/header :: header('contact')}"></header>
+
+    <!-- Page Header -->
+    <div class="relative w-full overflow-hidden border-b border-white/20 contact-hero">
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/35 via-slate-950/15 to-transparent"></div>
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
+            <div class="max-w-3xl rounded-[2rem] border border-white/50 bg-white/90 p-6 md:p-8 shadow-[0_20px_60px_rgba(15,23,42,0.18)] backdrop-blur">
+                <div class="flex items-center gap-2 text-sm font-semibold text-slate-500 mb-4">
+                    <a href="/" class="hover:text-blue-600 transition-colors">Home</a>
+                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    <span class="text-blue-600">Contact Us</span>
+                </div>
+
+                <div class="inline-flex items-center gap-2 rounded-full bg-blue-50 border border-blue-100 px-4 py-1.5 text-xs font-black uppercase tracking-[0.25em] text-blue-700 mb-3">
+                    <i data-lucide="mail" class="w-3.5 h-3.5"></i>
+                    Get In Touch
+                </div>
+                <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-2">We're Here to Help</h1>
+                <p class="text-slate-600 font-medium max-w-2xl text-sm md:text-base leading-relaxed">
+                    Reach out for booking help, tour planning, guide support, or account assistance. We keep the process simple, clear, and responsive.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
+        <section class="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-6">
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 md:p-10">
+                <h2 class="text-2xl font-black text-slate-900 mb-6">Contact Channels</h2>
+
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4">
+                        <div class="w-11 h-11 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0"><i data-lucide="mail" class="w-5 h-5"></i></div>
+                        <div>
+                            <h2 class="font-bold text-slate-900">Email</h2>
+                            <p class="text-sm text-slate-600">support@srilankatours.local</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0"><i data-lucide="phone" class="w-5 h-5"></i></div>
+                        <div>
+                            <h2 class="font-bold text-slate-900">Phone</h2>
+                            <p class="text-sm text-slate-600">+94 11 000 0000</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-11 h-11 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center shrink-0"><i data-lucide="map-pin" class="w-5 h-5"></i></div>
+                        <div>
+                            <h2 class="font-bold text-slate-900">Office</h2>
+                            <p class="text-sm text-slate-600">Colombo, Sri Lanka</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 md:p-10">
+                <h2 class="text-xl font-bold text-slate-950 mb-4">Support Hours</h2>
+                <div class="space-y-3 text-sm text-slate-600 font-medium">
+                    <p>Monday to Friday: 9:00 AM to 6:00 PM</p>
+                    <p>Saturday: 9:00 AM to 1:00 PM</p>
+                    <p>Sunday: Closed</p>
+                </div>
+                <div class="mt-8 rounded-2xl bg-slate-50 border border-slate-200 p-5">
+                    <p class="text-sm text-slate-700 font-medium leading-relaxed">
+                        For fast help, include your booking number, tour dates, and the email used on your account.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tourist Home | Sri Lanka Tours</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f0f8ff; }
+        .hero-bg {
+            background-image: linear-gradient(rgba(10, 35, 66, 0.5), rgba(10, 35, 66, 0.25)), url('/images/sri_lanka_collage.png');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen text-slate-800 antialiased">
+
+    <header th:replace="~{fragments/header :: header('home')}"></header>
+
+    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <section class="rounded-[2rem] overflow-hidden mb-8 shadow-2xl hero-bg border border-white/20" th:with="firstName=${touristFirstName != null ? touristFirstName : 'Traveler'}">
+            <div class="bg-slate-950/20 backdrop-blur-[1px]">
+                <div class="px-8 py-14 md:py-20 relative z-10">
+                    <div class="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur px-4 py-2 text-xs font-black uppercase tracking-[0.28em] text-white/90 mb-5">
+                        <i data-lucide="compass" class="w-4 h-4"></i>
+                        Dashboard
+                    </div>
+                    <h2 class="text-3xl md:text-5xl font-black text-white mb-3 drop-shadow-md">Welcome Back, <span th:text="${firstName}">Rashmi</span>!</h2>
+                    <p class="text-blue-100 font-medium max-w-2xl text-base md:text-lg leading-relaxed drop-shadow-sm">
+                        Your dashboard keeps bookings, custom plans, and destination ideas in one place. Continue planning, review your saved trips, or jump into a new itinerary.
+                    </p>
+                    <div class="mt-6 flex flex-wrap items-center gap-3 text-sm font-semibold text-white/90">
+                        <span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur">
+                            <i data-lucide="mail" class="w-4 h-4"></i>
+                            <span th:text="${touristEmail != null ? touristEmail : 'tourist@example.com'}">rashmi@example.com</span>
+                        </span>
+                        <a th:href="@{/tourist/tour-plans/build}" class="inline-flex items-center gap-2 rounded-full bg-white text-slate-900 px-4 py-2 font-black hover:bg-blue-50 transition-colors">
+                            <i data-lucide="sparkles" class="w-4 h-4 text-blue-600"></i>
+                            Build a Custom Plan
+                        </a>
+                        <a th:href="@{/tourist/tour-plans}" class="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 backdrop-blur hover:bg-white/20 transition-colors">
+                            <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+                            View Saved Plans
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <a href="/tourist/bookings" class="relative bg-white p-6 rounded-2xl border border-slate-200 hover:border-blue-300 hover:shadow-md transition group min-h-[180px] flex flex-col justify-between">
+                <span class="absolute top-4 right-4 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">2</span>
+                <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                    <i data-lucide="calendar-check" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900">Upcoming Bookings</h3>
+                <p class="text-sm text-slate-500 mt-1">You have 2 tours scheduled.</p>
+            </a>
+
+            <a href="/tourist/tour-plans" class="relative bg-white p-6 rounded-2xl border border-slate-200 hover:border-blue-300 hover:shadow-md transition group min-h-[180px] flex flex-col justify-between">
+                <span class="absolute top-4 right-4 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">3</span>
+                <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                    <i data-lucide="map" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900">Saved Itineraries</h3>
+                <p class="text-sm text-slate-500 mt-1">3 custom plans created.</p>
+            </a>
+
+            <a href="/tourist/tour-plans/build" class="relative bg-gradient-to-br from-blue-600 to-indigo-600 p-6 rounded-2xl shadow-lg shadow-blue-200/50 hover:shadow-xl transition group text-white overflow-hidden min-h-[180px] flex flex-col justify-between">
+                <div class="absolute top-4 right-4 flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-[10px] font-bold text-white ring-2 ring-white/10">New</div>
+                <div class="w-12 h-12 rounded-full bg-white/15 text-white flex items-center justify-center mb-4 group-hover:scale-110 transition backdrop-blur">
+                    <i data-lucide="sliders-horizontal" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-lg font-bold">Custom Tour Plan</h3>
+                <p class="text-sm text-white/80 mt-1">Choose destinations, trip length, travel options, and a guide.</p>
+            </a>
+        </section>
+
+        <section class="mb-8">
+            <div class="flex justify-between items-end mb-4">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900">Featured Destinations</h3>
+                    <p class="text-sm text-slate-500">Popular places you might like</p>
+                </div>
+                <a href="/tourist/destinations" class="text-sm font-bold text-blue-600 hover:underline flex items-center gap-1">View All <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+            </div>
+
+            <div th:if="${!#lists.isEmpty(featuredDestinations)}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <a th:each="dest : ${featuredDestinations}" th:href="@{/tourist/destinations/{id}(id=${dest.id})}" class="group flex flex-col h-[350px] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-blue-100 bg-white">
+                    <div class="relative h-48 overflow-hidden shrink-0">
+                        <img th:src="${dest.imageUrl != null and !#strings.isEmpty(dest.imageUrl) ? dest.imageUrl : 'https://placehold.co/600x400/e2e8f0/475569?text=Destination'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" th:alt="${dest.name}">
+                    </div>
+
+                    <div class="flex flex-col justify-between p-4 flex-1 bg-white">
+                        <div>
+                            <h3 class="text-lg font-extrabold text-slate-900 group-hover:text-blue-600 transition-colors leading-tight mb-1 truncate" th:text="${dest.name}">Destination Name</h3>
+
+                            <p class="text-xs font-semibold text-slate-500 flex items-center gap-1">
+                                <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-500"></i>
+                                <span th:text="${dest.getFormattedProvince() + ', ' + dest.district}">Province, District</span>
+                            </p>
+                        </div>
+
+                        <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
+                            <div class="flex flex-col gap-1">
+                                <div class="flex items-center gap-0.5 text-yellow-400">
+                                    <i th:if="${dest.getAverageRatingRounded() > 0}" th:each="star : ${#numbers.sequence(1, dest.getAverageRatingRounded())}" data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                                    <i th:if="${dest.getAverageRatingRounded() < 5}" th:each="star : ${#numbers.sequence(dest.getAverageRatingRounded() + 1, 5)}" data-lucide="star" class="w-3.5 h-3.5 text-slate-300"></i>
+                                </div>
+                            </div>
+
+                            <div class="text-sm font-extrabold text-blue-600">
+                                Rs. <span th:text="${#numbers.formatDecimal(dest.entryFee, 1, 'DEFAULT', 2, 'DEFAULT')}">0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div th:if="${#lists.isEmpty(featuredDestinations)}" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center">
+                <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="map-pin" class="w-8 h-8 text-blue-400"></i>
+                </div>
+                <h4 class="text-lg font-bold text-slate-800 mb-2">No featured destinations yet</h4>
+                <p class="text-sm text-slate-500">Check back soon for recommended places to explore.</p>
+            </div>
+        </section>
+
+        <!-- Top 5 Reviews Section -->
+        <section class="mb-8" th:if="${topReviews != null and !#lists.isEmpty(topReviews)}">
+            <div class="flex justify-between items-end mb-4">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900">What Travelers Say</h3>
+                    <p class="text-sm text-slate-500">Top-rated reviews from real travelers</p>
+                </div>
+                <a href="/reviews" class="text-sm font-bold text-blue-600 hover:underline flex items-center gap-1">All Reviews <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div th:each="review : ${topReviews}" class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm shrink-0"
+                             style="background: linear-gradient(135deg, #3b82f6, #6366f1);"
+                             th:text="${review.reviewerName != null ? #strings.substring(review.reviewerName, 0, 1).toUpperCase() : 'A'}">A</div>
+                        <div>
+                            <p class="text-sm font-black text-slate-900" th:text="${review.reviewerName} ?: 'Anonymous'">Name</p>
+                            <div class="flex items-center gap-0.5 mt-0.5">
+                                <svg th:each="i : ${#numbers.sequence(1,5)}"
+                                     th:class="${i <= review.rating ? 'w-3.5 h-3.5 fill-yellow-400 text-yellow-400' : 'w-3.5 h-3.5 fill-slate-200 text-slate-200'}"
+                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed line-clamp-3" th:text="${review.comment}">Review comment</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

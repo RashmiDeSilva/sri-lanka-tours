@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Tour Guide | Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandBlue: '#0056b3',
+                        lightBg: '#f8fafc'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .input-field {
+            width: 100%;
+            padding: 10px 14px 10px 38px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            background-color: #f8fafc;
+            outline: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .input-field:focus {
+            border-color: #0056b3;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
+        }
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body class="flex h-screen bg-lightBg overflow-hidden text-slate-800">
+
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('guides')}"></aside>
+
+    <main class="flex-1 flex flex-col min-w-0 bg-lightBg z-10">
+        <header th:replace="~{fragments/admin-header :: header('Edit Tour Guide', 'Update tour guide profile and configurations')}"></header>
+
+        <div class="flex-1 overflow-y-auto p-6 lg:p-8">
+            <div th:if="${error}" class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-center gap-3 shadow-sm">
+                <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                <span th:text="${error}" class="text-sm font-bold"></span>
+            </div>
+
+            <form th:action="@{/admin/guides/{id}(id=${guide.id})}" th:object="${guide}" method="POST" class="max-w-3xl mx-auto" onsubmit="return validateLanguagesForm()">
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="p-6 md:p-8 space-y-6">
+                        <h3 class="text-lg font-black text-slate-900 border-b border-slate-100 pb-4 flex items-center gap-2">
+                            <i data-lucide="contact" class="w-5 h-5 text-brandBlue"></i> Edit Guide Profile
+                        </h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <!-- Full Name -->
+                            <div>
+                                <label for="name" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Full Name <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i data-lucide="user" class="input-icon"></i>
+                                    <input type="text" th:field="*{name}" id="name" required class="input-field" placeholder="e.g. John Doe">
+                                </div>
+                            </div>
+
+                            <!-- Email Address -->
+                            <div>
+                                <label for="email" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Email Address <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i data-lucide="mail" class="input-icon"></i>
+                                    <input type="email" th:field="*{email}" id="email" required class="input-field" placeholder="e.g. john@example.com">
+                                </div>
+                            </div>
+
+                            <!-- Phone Number -->
+                            <div>
+                                <label for="phone" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Phone Number <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i data-lucide="phone" class="input-icon"></i>
+                                    <input type="tel" th:field="*{phone}" id="phone" required class="input-field" placeholder="e.g. 0771234567" pattern="[0-9]{10}" maxlength="10" minlength="10">
+                                </div>
+                            </div>
+
+                            <!-- Hourly Rate (Rs.) -->
+                            <div>
+                                <label for="hourlyRate" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Hourly Rate (Rs. Sri Lanka Rupee) <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <span class="input-icon text-xs font-black flex items-center justify-center" style="line-height: 1; pointer-events: none; width: auto;">Rs.</span>
+                                    <input type="number" step="0.01" th:field="*{hourlyRate}" id="hourlyRate" required class="input-field" style="padding-left: 44px;" placeholder="e.g. 1500.00">
+                                </div>
+                            </div>
+
+                            <!-- NIC Number -->
+                            <div>
+                                <label for="nic" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">NIC Number <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i data-lucide="credit-card" class="input-icon"></i>
+                                    <input type="text" th:field="*{nic}" id="nic" required class="input-field" placeholder="e.g. 199512345678 or 951234567V">
+                                </div>
+                            </div>
+
+                            <!-- Date of Birth -->
+                            <div>
+                                <label for="dob" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Date of Birth <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i data-lucide="calendar" class="input-icon"></i>
+                                    <input type="date" th:field="*{dob}" id="dob" required class="input-field text-slate-500">
+                                </div>
+                            </div>
+
+                            <!-- Gender -->
+                            <div>
+                                <label for="gender" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Gender <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i data-lucide="user" class="input-icon"></i>
+                                    <select th:field="*{gender}" id="gender" required class="input-field appearance-none">
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+                                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Spoken Languages (Multi-Select Checkboxes) -->
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">Spoken Languages <span class="text-red-500">*</span></label>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                                    <label class="flex items-center gap-2.5 cursor-pointer hover:bg-slate-100 p-1.5 rounded transition">
+                                        <input type="checkbox" name="languages-check" value="English" class="w-4 h-4 rounded border-slate-300 text-brandBlue focus:ring-brandBlue">
+                                        <span class="text-xs font-semibold text-slate-700">English</span>
+                                    </label>
+                                    <label class="flex items-center gap-2.5 cursor-pointer hover:bg-slate-100 p-1.5 rounded transition">
+                                        <input type="checkbox" name="languages-check" value="Sinhala (සිංහල)" class="w-4 h-4 rounded border-slate-300 text-brandBlue focus:ring-brandBlue">
+                                        <span class="text-xs font-semibold text-slate-700">Sinhala (සිංහල)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2.5 cursor-pointer hover:bg-slate-100 p-1.5 rounded transition">
+                                        <input type="checkbox" name="languages-check" value="Tamil (தமிழ்)" class="w-4 h-4 rounded border-slate-300 text-brandBlue focus:ring-brandBlue">
+                                        <span class="text-xs font-semibold text-slate-700">Tamil (தமிழ்)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2.5 cursor-pointer hover:bg-slate-100 p-1.5 rounded transition">
+                                        <input type="checkbox" name="languages-check" value="Chinese (Simplified) (简体中文)" class="w-4 h-4 rounded border-slate-300 text-brandBlue focus:ring-brandBlue">
+                                        <span class="text-xs font-semibold text-slate-700">Chinese (Simplified) (简体中文)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2.5 cursor-pointer hover:bg-slate-100 p-1.5 rounded transition">
+                                        <input type="checkbox" name="languages-check" value="German (Deutsch)" class="w-4 h-4 rounded border-slate-300 text-brandBlue focus:ring-brandBlue">
+                                        <span class="text-xs font-semibold text-slate-700">German (Deutsch)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2.5 cursor-pointer hover:bg-slate-100 p-1.5 rounded transition">
+                                        <input type="checkbox" name="languages-check" value="French (Français)" class="w-4 h-4 rounded border-slate-300 text-brandBlue focus:ring-brandBlue">
+                                        <span class="text-xs font-semibold text-slate-700">French (Français)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2.5 cursor-pointer hover:bg-slate-100 p-1.5 rounded transition">
+                                        <input type="checkbox" name="languages-check" value="Russian (Русский)" class="w-4 h-4 rounded border-slate-300 text-brandBlue focus:ring-brandBlue">
+                                        <span class="text-xs font-semibold text-slate-700">Russian (Русский)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2.5 cursor-pointer hover:bg-slate-100 p-1.5 rounded transition">
+                                        <input type="checkbox" name="languages-check" value="Japanese (日本語)" class="w-4 h-4 rounded border-slate-300 text-brandBlue focus:ring-brandBlue">
+                                        <span class="text-xs font-semibold text-slate-700">Japanese (日本語)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2.5 cursor-pointer hover:bg-slate-100 p-1.5 rounded transition">
+                                        <input type="checkbox" name="languages-check" value="Korean (한국어)" class="w-4 h-4 rounded border-slate-300 text-brandBlue focus:ring-brandBlue">
+                                        <span class="text-xs font-semibold text-slate-700">Korean (한국어)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2.5 cursor-pointer hover:bg-slate-100 p-1.5 rounded transition">
+                                        <input type="checkbox" name="languages-check" value="Hindi (हिन्दी)" class="w-4 h-4 rounded border-slate-300 text-brandBlue focus:ring-brandBlue">
+                                        <span class="text-xs font-semibold text-slate-700">Hindi (हिन्दी)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2.5 cursor-pointer hover:bg-slate-100 p-1.5 rounded transition">
+                                        <input type="checkbox" name="languages-check" value="Arabic (العربية)" class="w-4 h-4 rounded border-slate-300 text-brandBlue focus:ring-brandBlue">
+                                        <span class="text-xs font-semibold text-slate-700">Arabic (العربية)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2.5 cursor-pointer hover:bg-slate-100 p-1.5 rounded transition">
+                                        <input type="checkbox" name="languages-check" value="Spanish (Español)" class="w-4 h-4 rounded border-slate-300 text-brandBlue focus:ring-brandBlue">
+                                        <span class="text-xs font-semibold text-slate-700">Spanish (Español)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2.5 cursor-pointer hover:bg-slate-100 p-1.5 rounded transition">
+                                        <input type="checkbox" name="languages-check" value="Italian (Italiano)" class="w-4 h-4 rounded border-slate-300 text-brandBlue focus:ring-brandBlue">
+                                        <span class="text-xs font-semibold text-slate-700">Italian (Italiano)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2.5 cursor-pointer hover:bg-slate-100 p-1.5 rounded transition">
+                                        <input type="checkbox" name="languages-check" value="Dutch (Nederlands)" class="w-4 h-4 rounded border-slate-300 text-brandBlue focus:ring-brandBlue">
+                                        <span class="text-xs font-semibold text-slate-700">Dutch (Nederlands)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2.5 cursor-pointer hover:bg-slate-100 p-1.5 rounded transition">
+                                        <input type="checkbox" name="languages-check" value="Portuguese (Português)" class="w-4 h-4 rounded border-slate-300 text-brandBlue focus:ring-brandBlue">
+                                        <span class="text-xs font-semibold text-slate-700">Portuguese (Português)</span>
+                                    </label>
+                                </div>
+                                <input type="hidden" th:field="*{languages}" id="languages" required>
+                            </div>
+
+                            <!-- Experience Years -->
+                            <div class="md:col-span-2">
+                                <label for="experience" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Years of Experience <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i data-lucide="award" class="input-icon"></i>
+                                    <input type="text" th:field="*{experience}" id="experience" required class="input-field" placeholder="e.g. 5 or 8+">
+                                </div>
+                            </div>
+
+                            <!-- Biography / description -->
+                            <div class="md:col-span-2">
+                                <label for="description" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Biography / Description</label>
+                                <textarea th:field="*{description}" id="description" rows="4" 
+                                          class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brandBlue focus:ring-2 focus:ring-blue-500/20 transition-all bg-slate-50 hover:bg-white resize-y font-medium" 
+                                          placeholder="Enter guide's experience, specialization, and short introduction..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="flex items-center justify-end gap-3 pt-6 border-t border-slate-100">
+                            <a th:href="@{/admin/guides}" class="px-6 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors border border-slate-200 bg-white">Cancel</a>
+                            <button type="submit" class="px-6 py-2.5 bg-brandBlue hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-md shadow-brandBlue/20 transition-all flex items-center gap-2">
+                                <i data-lucide="save" class="w-4 h-4"></i> Update Tour Guide
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <footer th:replace="~{fragments/admin-footer :: footer}"></footer>
+    </main>
+
+    <script th:inline="javascript">
+        lucide.createIcons();
+
+        // Pre-select saved languages when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            /*<![CDATA[*/
+            const savedLanguagesStr = /*[[${guide.languages}]]*/ '';
+            /*]]>*/
+            if (savedLanguagesStr) {
+                const savedLanguages = savedLanguagesStr.split(',').map(s => s.trim());
+                document.querySelectorAll('input[name="languages-check"]').forEach(cb => {
+                    if (savedLanguages.includes(cb.value)) {
+                        cb.checked = true;
+                    }
+                });
+            }
+        });
+
+        function validateLanguagesForm() {
+            const checked = document.querySelectorAll('input[name="languages-check"]:checked');
+            if (checked.length === 0) {
+                alert("Please select at least one spoken language.");
+                return false;
+            }
+            const languagesStr = Array.from(checked).map(cb => cb.value).join(', ');
+            document.getElementById('languages').value = languagesStr;
+            return true;
+        }
+    </script>
+</body>
+</html>
