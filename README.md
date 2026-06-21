@@ -1,4 +1,4 @@
-# 🌴 Sri Lanka Tour Guide System
+# Sri Lanka Tour Guide System
 
 A full-stack web application that connects **tourists** with **certified local tour guides** across Sri Lanka. Tourists can explore destinations, book guides, plan custom itineraries, and leave reviews. Guides can manage their profiles and respond to booking requests. Admins have full system control.
 
@@ -9,7 +9,7 @@ A full-stack web application that connects **tourists** with **certified local t
 | Layer | Technology |
 |---|---|
 | **Backend** | Java 17, Spring Boot 3, Spring MVC, Spring Security |
-| **Persistence** | Spring Data JPA, Hibernate ORM, MySQL 8 |
+| **Data Base** | MySQL 8 |
 | **Frontend** | Thymeleaf, HTML5, CSS3, JavaScript |
 | **Styling** | Tailwind CSS (CDN), Lucide Icons |
 | **Build Tool** | Apache Maven |
@@ -251,4 +251,5 @@ tour_guide_system/
 
 ## 📄 License
 
-This project was developed as a Software Engineering academic project at the **Sri Lanka Institute of Information Technology (SLIIT)**.
+This project was developed as an academic coursework project for the **Software Engineering** module offered in **Year 2, Semester 1** at the **Sri Lanka Institute of Information Technology (SLIIT)**.
+
